@@ -1,0 +1,2741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HRMS 2.0 — ESR Personal, Spouse, Qualification, Dependent &amp; Nominee Portal</title>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"
+        onerror="var s=document.createElement('script');s.src='https://unpkg.com/exceljs@4.4.0/dist/exceljs.min.js';document.head.appendChild(s);"></script>
+<style>
+  :root {
+    --primary: #0f766e;
+    --primary-dark: #064e3b;
+    --accent: #d97706;
+    --bg: #f1f5f9;
+    --card: #ffffff;
+    --border: #cbd5e1;
+    --text: #0f172a;
+    --muted: #475569;
+    --success: #15803d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, 'Noto Sans Kannada', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  body.senior-mode {
+    font-size: 1.14rem;
+    line-height: 1.65;
+  }
+  body.senior-mode input,
+  body.senior-mode select {
+    font-size: 1.08rem !important;
+    padding: 11px 12px !important;
+    border-width: 2px !important;
+  }
+  body.senior-mode table.esr-table td {
+    padding: 10px 11px !important;
+  }
+  body.senior-mode .btn {
+    padding: 10px 15px !important;
+    font-size: 0.96rem !important;
+  }
+
+  /* Updated Heading Banner (Emerald Teal & Gold) */
+  header.app-header {
+    background: linear-gradient(135deg, #042f2e 0%, #0f766e 100%);
+    padding: 14px 16px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+  }
+  .name-board {
+    max-width: 1080px;
+    margin: 0 auto;
+    background: linear-gradient(180deg, #065f46 0%, #064e3b 100%);
+    border: 4px double #fde047;
+    border-radius: 10px;
+    padding: 12px 18px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.35), inset 0 0 12px rgba(253,224,71,0.22);
+  }
+  .board-title {
+    color: #fef08a;
+    font-size: 1.42rem;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    text-shadow: 1px 2px 3px rgba(0,0,0,0.65);
+    outline: none;
+    cursor: text;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .board-subtitle {
+    color: #ffffff;
+    font-size: 0.92rem;
+    font-weight: 600;
+    margin-top: 5px;
+    outline: none;
+    cursor: text;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .board-title:hover, .board-title:focus,
+  .board-subtitle:hover, .board-subtitle:focus {
+    background: rgba(255,255,255,0.14);
+    outline: 1px dashed #fde047;
+  }
+  .board-edit-hint {
+    display: inline-block;
+    margin-top: 5px;
+    font-size: 0.72rem;
+    color: #fef08a;
+    background: rgba(0,0,0,0.32);
+    padding: 2px 10px;
+    border-radius: 12px;
+  }
+
+  /* Toolbar */
+  .toolbar {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .btn {
+    border: none;
+    border-radius: 6px;
+    padding: 8px 13px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+    text-decoration: none;
+  }
+  .btn-primary { background: #2563eb; color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-success { background: var(--success); color: #fff; }
+  .btn-success:hover { background: #166534; }
+  .btn-amber { background: #d97706; color: #fff; }
+  .btn-amber:hover { background: #b45309; }
+  .btn-teal { background: #0d9488; color: #fff; }
+  .btn-teal:hover { background: #0f766e; }
+  .btn-purple { background: #7c3aed; color: #fff; }
+  .btn-purple:hover { background: #6d28d9; }
+  .btn-dark { background: #0f172a; color: #fde047; }
+  .btn-dark:hover { background: #1e293b; }
+  .btn-outline { background: #f8fafc; color: var(--text); border: 1px solid var(--border); }
+  .btn-outline:hover { background: #e2e8f0; }
+  .btn-danger { background: #dc2626; color: #fff; }
+  .btn-sm { padding: 4px 9px; font-size: 0.78rem; }
+  .btn-lg { padding: 12px 24px; font-size: 1rem; font-weight: 800; }
+
+  /* Inline Voice Typing Box (Part 1A & Part 1B) */
+  .voice-wrap {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+  }
+  .voice-wrap > input {
+    flex: 1;
+    min-width: 0;
+  }
+  .mic-btn {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    background: #f1f5f9;
+    color: #0f172a;
+    font-size: 1rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mic-btn:hover { background: #ccfbf1; border-color: #0f766e; }
+  .mic-btn.active-mic {
+    background: #dc2626;
+    color: #fff;
+    border-color: #991b1b;
+    animation: pulseMic 1s infinite;
+  }
+  @keyframes pulseMic {
+    0% { box-shadow: 0 0 0 0 rgba(220,38,38,0.55); }
+    70% { box-shadow: 0 0 0 8px rgba(220,38,38,0); }
+    100% { box-shadow: 0 0 0 0 rgba(220,38,38,0); }
+  }
+
+  .container {
+    max-width: 1240px;
+    margin: 18px auto 115px;
+    padding: 0 14px;
+  }
+  .info-banner {
+    background: #f0fdfa;
+    border-left: 5px solid #0f766e;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 14px;
+    font-size: 0.92rem;
+  }
+
+  /* Navigation Tabs */
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 16px;
+  }
+  .tab-btn {
+    color: #fff;
+    border: 2px solid transparent;
+    padding: 9px 14px;
+    border-radius: 7px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    opacity: 0.9;
+    transition: all 0.15s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  }
+  .tab-btn:hover { opacity: 1; transform: translateY(-1px); }
+  .tab-btn.active { opacity: 1; border-color: #0f172a; box-shadow: 0 3px 8px rgba(0,0,0,0.22); transform: scale(1.02); }
+
+  .tab-part1a { background: #1d4ed8; }
+  .tab-part1b { background: #0d9488; }
+  .tab-part2 { background: #7c3aed; }
+  .tab-docs { background: #b45309; }
+
+  .section-panel { display: none; }
+  .section-panel.active { display: block; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 18px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+  .card-header {
+    color: #fff;
+    padding: 11px 16px;
+    font-weight: 700;
+    font-size: 0.98rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .theme-1a .card-header { background: linear-gradient(90deg, #1e3a8a, #2563eb); }
+  .theme-1a .sub-header { background: #dbeafe; color: #1e3a8a; }
+  .theme-1a .card { border-top: 4px solid #2563eb; }
+
+  .theme-1b .card-header { background: linear-gradient(90deg, #115e59, #0d9488); }
+  .theme-1b .sub-header { background: #ccfbf1; color: #115e59; }
+  .theme-1b .card { border-top: 4px solid #0d9488; }
+
+  .theme-2 .card-header { background: linear-gradient(90deg, #5b21b6, #7c3aed); }
+  .theme-2 .card { border-top: 4px solid #7c3aed; }
+
+  .theme-docs .card-header { background: linear-gradient(90deg, #92400e, #d97706); }
+  .theme-docs .card { border-top: 4px solid #d97706; }
+
+  .sub-header {
+    background: #e0e7ff;
+    color: #1e3a8a;
+    padding: 8px 14px;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  .table-scroll {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  table.esr-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  table.esr-table th {
+    background: #f1f5f9;
+    color: #0f172a;
+    font-size: 0.84rem;
+    font-weight: 800;
+    text-align: left;
+    padding: 9px 10px;
+    border-bottom: 2px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+  table.esr-table td {
+    padding: 7px 9px;
+    border-bottom: 1px solid #e2e8f0;
+    border-right: 1px solid #e2e8f0;
+    vertical-align: middle;
+    font-size: 0.88rem;
+  }
+  table.esr-table td.field-label {
+    width: 34%;
+    font-weight: 600;
+    background: #fcfcfd;
+  }
+  .req { color: #dc2626; font-weight: bold; }
+
+  input[type="text"], input[type="date"], input[type="number"], input[type="email"], input[type="password"], select {
+    width: 100%;
+    padding: 7px 9px;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+    font-size: 0.88rem;
+    font-family: inherit;
+    font-weight: 700;
+    color: #0f172a;
+    background: #fff;
+  }
+  input[readonly].frozen-input {
+    background: #e2e8f0;
+    color: #1e3a8a;
+    cursor: not-allowed;
+    border-color: #94a3b8;
+  }
+  input::placeholder {
+    font-weight: 400;
+    color: #94a3b8;
+  }
+  .kn-input {
+    font-family: 'Noto Sans Kannada', 'Tunga', sans-serif;
+    font-weight: 700;
+    background: #fefce8;
+  }
+  .hint {
+    font-size: 0.76rem;
+    color: var(--muted);
+    display: block;
+    margin-top: 3px;
+    font-weight: 600;
+  }
+
+  .photo-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 6px 0;
+  }
+  .photo-preview-wrap {
+    width: 125px;
+    height: 150px;
+    border: 2px dashed #94a3b8;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #f8fafc;
+    text-align: center;
+    font-size: 0.76rem;
+    color: #64748b;
+    font-weight: 700;
+  }
+  .photo-preview-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .qual-photo-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 185px;
+  }
+  .qual-thumb {
+    width: 54px;
+    height: 66px;
+    border: 1.5px dashed #94a3b8;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #f8fafc;
+    font-size: 0.65rem;
+    color: #64748b;
+    font-weight: 700;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .qual-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .photo-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    max-width: 380px;
+  }
+  .badge-kb {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    background: #dcfce7;
+    color: #166534;
+  }
+  .doc-card {
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 12px;
+    background: #f8fafc;
+    margin-bottom: 10px;
+  }
+  .doc-card-title {
+    font-weight: 800;
+    color: #1e3a8a;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+  }
+
+  .step-nav-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-top: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,0.88);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    overflow-y: auto;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal-box {
+    background: #0f172a;
+    color: #fff;
+    border: 2px solid #fde047;
+    border-radius: 10px;
+    max-width: 640px;
+    width: 100%;
+    padding: 18px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  video#cameraStream {
+    width: 100%;
+    height: 54vh;
+    max-height: 400px;
+    min-height: 220px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #000;
+  }
+  .camera-btn-bar {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* Updated Footer Banner (Deep Royal Indigo & Emerald Gold) */
+  footer.app-footer.banner-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(90deg, #064e3b, #1e1b4b, #0f766e, #1e1b4b, #064e3b);
+    background-size: 300% 300%;
+    animation: bannerFlow 9s ease infinite;
+    color: #fff;
+    padding: 8px 14px;
+    z-index: 200;
+    border-top: 3px solid #fde047;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.3);
+  }
+  .banner-inner {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 6px 14px;
+    text-align: center;
+  }
+  .banner-pill {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(253, 224, 71, 0.7);
+    border-radius: 999px;
+    padding: 3px 13px;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+  @keyframes bannerFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .footer-highlight { color: #fde047; font-weight: 800; }
+  .footer-kn { color: #99f6e4; font-weight: 700; }
+
+  @media print {
+    @page { size: A4 portrait; margin: 9mm 9mm; }
+    body { background: #fff !important; color: #000 !important; font-size: 9pt; }
+    .no-print, .toolbar, .tabs, .info-banner, .step-nav-bar, .mic-btn, footer, .app-footer, .banner-footer, .photo-controls, .btn, .hint, #panel-upload-docs, #panel-settings, #cameraModal, #adminAuthModal, #wishingModal {
+      display: none !important;
+      visibility: hidden !important;
+    }
+    header.app-header { background: none !important; box-shadow: none !important; padding: 0 0 6px 0 !important; }
+    .name-board { background: #fff !important; border: 2px solid #000 !important; box-shadow: none !important; padding: 7px 10px !important; }
+    .board-title { color: #000 !important; text-shadow: none !important; font-size: 13pt !important; }
+    .board-subtitle { color: #000 !important; font-size: 9.5pt !important; }
+    .container { max-width: 100%; margin: 0; padding: 0; }
+    .section-panel.form-part { display: block !important; }
+    .card { box-shadow: none !important; border: 1px solid #333 !important; margin-bottom: 8px !important; }
+    .card-header { background: #e2e8f0 !important; color: #000 !important; border-bottom: 1px solid #333 !important; padding: 5px 9px !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .sub-header { background: #f1f5f9 !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    table.esr-table th, table.esr-table td { border: 1px solid #444 !important; padding: 3.5px 5.5px !important; }
+    input, select { border: none !important; background: transparent !important; padding: 1px 2px !important; font-weight: 700 !important; color: #000 !important; appearance: none; -webkit-appearance: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="name-board">
+    <div class="board-title" contenteditable="true" spellcheck="false" title="Click to edit Office Name Board">ಕ್ಷೇತ್ರ ಶಿಕ್ಷಣಾಧಿಕಾರಿಗಳ ಕಾರ್ಯಾಲಯ ಚಿಕ್ಕನಾಯಕನಹಳ್ಳಿ ತಾಲ್ಲೂಕು ತುಮಕೂರು ಜಿಲ್ಲೆ</div>
+    <div class="board-subtitle" contenteditable="true" spellcheck="false" title="Click to edit Sub-heading">KARNATAKA HRMS 2.0 — e-SERVICE REGISTER (ESR) PORTAL (ನಮೂನೆ)</div>
+    <span class="board-edit-hint no-print">&#9998; ನೇಮ್ ಬೋರ್ಡ್ ಮೇಲೆ ಕ್ಲಿಕ್ ಮಾಡಿ ಎಡಿಟ್ ಮಾಡಬಹುದು (Click name board to edit)</span>
+  </div>
+</header>
+
+<div class="toolbar no-print">
+  <a href="https://sts.karnataka.gov.in/EEDS/login/loadLoginPage.htm" target="_blank" rel="noopener noreferrer" class="btn btn-teal">&#127760; EEDS Portal</a>
+  <button type="button" class="btn btn-purple" id="btnSeniorMode" onclick="toggleSeniorMode()">&#129491; Senior Mode: Big Text</button>
+  <button type="button" class="btn btn-primary" onclick="saveLocalDraft()">&#128190; Save Draft</button>
+  <button type="button" class="btn btn-outline" onclick="loadDraftManual()">&#128194; Load Draft</button>
+  <button type="button" class="btn btn-success" onclick="downloadEmployeePDF()">&#128196; Download PDF</button>
+  <button type="button" class="btn btn-amber" onclick="downloadEmployeeExcel()">&#128202; Download Sheet + Photos (.xlsx)</button>
+  <button type="button" class="btn btn-dark" onclick="openAdminPanel()">&#128272; Admin: All Data &amp; Photos</button>
+  <button type="button" class="btn btn-primary" id="btnCloudSubmit" onclick="submitToGoogleSheet()">&#9729; Submit Data</button>
+  <button type="button" class="btn btn-outline" onclick="openTab('panel-settings', this)">&#9881; Setup Link</button>
+  <button type="button" class="btn btn-danger btn-sm" onclick="clearAllData()">Clear Form</button>
+</div>
+
+<div class="container">
+  <div class="info-banner no-print">
+    <strong>ಸೂಚನೆ:</strong> Voice typing (<strong>&#127908;</strong>) is available in <strong>Part I-A</strong> and <strong>Part I-B</strong> for easy entry. Click <strong>Save &amp; Continue &#10132;</strong> at the bottom of each section to move step-by-step.
+  </div>
+
+  <div class="tabs no-print">
+    <button class="tab-btn tab-part1a active" onclick="openTab('part1a', this)">Part I-A: Personal &amp; Father</button>
+    <button class="tab-btn tab-part1b" onclick="openTab('part1b', this)">Part I-B: Spouse Details</button>
+    <button class="tab-btn tab-part2" onclick="openTab('part2', this)">Qualification, Dependents &amp; Nominee</button>
+    <button class="tab-btn tab-docs" onclick="openTab('panel-upload-docs', this)">&#128206; Documents, Submit &amp; Downloads</button>
+  </div>
+
+  <form id="esrForm" autocomplete="off">
+    <!-- ==================== PART I : A (PERSONAL & FATHER DETAILS + VOICE TYPING) ==================== -->
+    <div id="part1a" class="section-panel form-part theme-1a active">
+      <div class="card">
+        <div class="card-header">
+          <span>PART I : A. PERSONAL INFORMATION (ವೈಯಕ್ತಿಕ ಮಾಹಿತಿ)</span>
+          <span>Pages 1–2</span>
+        </div>
+        <table class="esr-table">
+          <thead>
+            <tr>
+              <th style="width:34%;">Particulars / ವಿವರಗಳು</th>
+              <th style="width:66%;" colspan="2">Employee Details (English / ಕನ್ನಡ for Name)</th>
+            </tr>
+          </thead>
+          <tbody class="voice-enabled-part">
+            <tr>
+              <td class="field-label">KGID / Employee ID</td>
+              <td colspan="2"><input type="text" name="kgid_no" placeholder="Enter KGID / Employee ID"></td>
+            </tr>
+            <tr>
+              <td class="field-label">1. Name of the Government Servant (As per SSLC and SR) <span class="req">*</span></td>
+              <td style="width:33%;"><input type="text" name="emp_name_en" data-kn-target="emp_name_kn" placeholder="Full Name in English" oninput="handleTransliterate(this)"></td>
+              <td style="width:33%;"><input type="text" class="kn-input" name="emp_name_kn" placeholder="ಸರ್ಕಾರಿ ನೌಕರರ ಹೆಸರು (ಕನ್ನಡ)"></td>
+            </tr>
+
+            <tr><td colspan="3" class="sub-header">2. Residence (ಪ್ರಸ್ತುತ ವಾಸಸ್ಥಳ)</td></tr>
+            <tr>
+              <td class="field-label">2(i). Address <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="res_addr_en" placeholder="House / Street / Ward"></td>
+            </tr>
+            <tr>
+              <td class="field-label">2(ii). Revenue District <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="res_dist_en" placeholder="District"></td>
+            </tr>
+            <tr>
+              <td class="field-label">2(iii). Revenue Block / Taluka <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="res_taluk_en" placeholder="Taluka"></td>
+            </tr>
+            <tr>
+              <td class="field-label">2(iv). City / Village Name <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="res_village_en" placeholder="City / Village"></td>
+            </tr>
+            <tr>
+              <td class="field-label">2(v). Pincode <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="res_pincode" maxlength="6" placeholder="6-digit Pincode"></td>
+            </tr>
+            <tr>
+              <td class="field-label">2(vi). Mobile Number <span class="req">*</span></td>
+              <td><input type="text" name="res_mobile" maxlength="10" placeholder="10-digit Primary Mobile"></td>
+              <td><input type="text" name="res_mobile_alt" maxlength="10" placeholder="Alternate Mobile (if any)"></td>
+            </tr>
+            <tr>
+              <td class="field-label">2(vii). Landline Number and STD Code</td>
+              <td colspan="2"><input type="text" name="res_landline" placeholder="STD Code & Landline"></td>
+            </tr>
+            <tr>
+              <td class="field-label">2(viii). E-mail Id</td>
+              <td colspan="2"><input type="email" name="res_email" placeholder="Email Address"></td>
+            </tr>
+
+            <tr><td colspan="3" class="sub-header">3 &amp; 4. Father's Name &amp; Residence</td></tr>
+            <tr>
+              <td class="field-label">3. Father's First Name (As in SSLC Marks card / TC / Physical SR) <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="father_name_en" placeholder="Father's Full Name"></td>
+            </tr>
+            <tr>
+              <td class="field-label">4(i). Father Residence Address <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="father_addr_en" placeholder="Father Residence Address"></td>
+            </tr>
+            <tr>
+              <td class="field-label">4(ii). Father Revenue District <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="father_dist_en" placeholder="District"></td>
+            </tr>
+            <tr>
+              <td class="field-label">4(iii). Father Revenue Block / Taluka <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="father_taluk_en" placeholder="Taluka"></td>
+            </tr>
+            <tr>
+              <td class="field-label">4(iv). Father City / Village Name <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="father_village_en" placeholder="City / Village"></td>
+            </tr>
+            <tr>
+              <td class="field-label">4(v). Father Pincode <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="father_pincode" maxlength="6" placeholder="Pincode"></td>
+            </tr>
+            <tr>
+              <td class="field-label">4(vi). Father Mobile Number <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="father_mobile" maxlength="10" placeholder="Mobile Number"></td>
+            </tr>
+            <tr>
+              <td class="field-label">4(vii). Father Landline Number and STD Code</td>
+              <td colspan="2"><input type="text" name="father_landline" placeholder="STD & Landline"></td>
+            </tr>
+            <tr>
+              <td class="field-label">4(viii). Father E-mail Id</td>
+              <td colspan="2"><input type="email" name="father_email" placeholder="Father Email"></td>
+            </tr>
+
+            <tr><td colspan="3" class="sub-header">5. Other Details &amp; Employee Photo (&le; 100 KB)</td></tr>
+            <tr>
+              <td class="field-label">5(i). Gender <span class="req">*</span></td>
+              <td colspan="2">
+                <select name="gender">
+                  <option value="">-- Select Gender --</option>
+                  <option value="Male">Male (ಪುರುಷ)</option>
+                  <option value="Female">Female (ಮಹಿಳೆ)</option>
+                  <option value="Transgender">Transgender (ಇತರೆ)</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td class="field-label">5(ii). Religion <span class="req">*</span></td>
+              <td colspan="2">
+                <select name="religion_en">
+                  <option value="">-- Select Religion --</option>
+                  <option value="HINDU">HINDU</option>
+                  <option value="MUSLIM">MUSLIM</option>
+                  <option value="CHRISTIAN">CHRISTIAN</option>
+                  <option value="JAIN">JAIN</option>
+                  <option value="BUDDHISM">BUDDHISM</option>
+                  <option value="SIKH">SIKH</option>
+                  <option value="PARSI">PARSI</option>
+                  <option value="OTHERS">OTHERS</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td class="field-label">5(iii). Nationality <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="nationality_en" value="Indian" readonly class="frozen-input" title="Fixed value: Indian"></td>
+            </tr>
+            <tr>
+              <td class="field-label">5(iv). Social Category <span class="req">*</span></td>
+              <td colspan="2">
+                <select name="social_category">
+                  <option value="">-- Select Category --</option>
+                  <option value="GM">GM</option><option value="SC">SC</option><option value="ST">ST</option>
+                  <option value="Cat-1">Category-1</option><option value="2A">2A</option><option value="2B">2B</option>
+                  <option value="3A">3A</option><option value="3B">3B</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td class="field-label">5(iv.1). Caste Certificate Number (if SC/ST)</td>
+              <td colspan="2"><input type="text" name="caste_cert_no" placeholder="Certificate Number"></td>
+            </tr>
+            <tr>
+              <td class="field-label">5(v). Date of Birth <span class="req">*</span></td>
+              <td colspan="2"><input type="date" name="dob" onchange="autoFillDobWords(this.value)"></td>
+            </tr>
+            <tr>
+              <td class="field-label">5(vi). Date of Birth in Words</td>
+              <td colspan="2"><input type="text" name="dob_words" placeholder="Auto-filled or enter Date of Birth in Words"></td>
+            </tr>
+            <tr>
+              <td class="field-label">5(vii). Date of Birth in Shaka Era</td>
+              <td colspan="2"><input type="text" name="dob_shaka" placeholder="Shaka Era Date of Birth"></td>
+            </tr>
+            <tr>
+              <td class="field-label">5(viii). Exact Height by Measurement in Centimeters Only</td>
+              <td colspan="2"><input type="number" name="height_cm" placeholder="Height in cm (e.g., 168)"></td>
+            </tr>
+            <tr>
+              <td class="field-label">5(viii-b). Blood Group <span class="req">*</span></td>
+              <td colspan="2">
+                <select name="blood_group">
+                  <option value="">-- Select Blood Group --</option>
+                  <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                  <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td class="field-label">5(ix). Marital Status <span class="req">*</span></td>
+              <td colspan="2">
+                <select name="marital_status">
+                  <option value="">-- Select Marital Status --</option>
+                  <option value="Married">Married (ವಿವಾಹಿತ)</option>
+                  <option value="Unmarried">Unmarried (ಅವಿವಾಹಿತ)</option>
+                  <option value="Widow/Widower">Widow / Widower</option>
+                  <option value="Divorced">Divorced</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td class="field-label">5(x). Employee Upload Photo (&le; 100 KB JPG) <span class="req">*</span></td>
+              <td colspan="2">
+                <div class="photo-box">
+                  <div class="photo-preview-wrap" id="empPhotoPreview"><span>Employee Photo<br>(&le; 100 KB)</span></div>
+                  <div class="photo-controls">
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                      <label class="btn btn-primary btn-sm" style="margin:0;">
+                        &#128193; Upload Photo
+                        <input type="file" accept="image/*" style="display:none" onchange="processImageFile(event, 'emp')">
+                      </label>
+                      <button type="button" class="btn btn-amber btn-sm" onclick="openCamera('emp', 'user')">&#128247; Capture Photo</button>
+                      <button type="button" class="btn btn-danger btn-sm" onclick="clearPhoto('emp')">Remove Photo</button>
+                    </div>
+                    <span id="empPhotoMeta" class="badge-kb" style="display:none;"></span>
+                    <span class="hint">Automatically compressed &amp; resized under 100 KB (.JPG)</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <tr><td colspan="3" class="sub-header">6. Personal Mark of Identification (ಗುರುತಿನ ಚಿಹ್ನೆಗಳು)</td></tr>
+            <tr>
+              <td class="field-label">6(i). Identification Mark 1 <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="id_mark1_en" placeholder="Identification Mark 1"></td>
+            </tr>
+            <tr>
+              <td class="field-label">6(ii). Identification Mark 2 <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="id_mark2_en" placeholder="Identification Mark 2"></td>
+            </tr>
+            <tr>
+              <td class="field-label">6(iii). Identification Mark 3</td>
+              <td colspan="2"><input type="text" name="id_mark3_en" placeholder="Identification Mark 3"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="step-nav-bar no-print">
+        <span style="font-size:0.86rem;font-weight:700;color:#1e3a8a;">Step 1 of 4 — Part I-A Personal &amp; Father Details</span>
+        <button type="button" class="btn btn-success btn-lg" onclick="saveAndContinue('part1b')">&#128190; Save &amp; Continue &#10132;</button>
+      </div>
+    </div>
+
+    <!-- ==================== PART I : B (SPOUSE DETAILS + VOICE TYPING + GOVT/PRIVATE/AIDED) ==================== -->
+    <div id="part1b" class="section-panel form-part theme-1b">
+      <div class="card">
+        <div class="card-header"><span>PART I : B. SPOUSE DETAILS (ಪತಿ / ಪತ್ನಿಯ ವಿವರಗಳು)</span><span>Pages 2–3</span></div>
+        <table class="esr-table">
+          <tbody class="voice-enabled-part">
+            <tr>
+              <td class="field-label">3(a)(i). Husband Name / Wife Name <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="spouse_name_en" placeholder="Spouse Full Name"></td>
+            </tr>
+            <tr>
+              <td class="field-label">3(a)(iv). Spouse First Name <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="spouse_fname_en" placeholder="Spouse First Name"></td>
+            </tr>
+            <tr>
+              <td class="field-label">3(b)(i). Spouse Residence Address <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="spouse_addr_en" placeholder="Spouse Residence Address"></td>
+            </tr>
+            <tr>
+              <td class="field-label">3(b)(ii). Revenue District <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="spouse_dist_en" placeholder="District"></td>
+            </tr>
+            <tr>
+              <td class="field-label">3(b)(iii). Revenue Block / Taluka <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="spouse_taluk_en" placeholder="Taluka"></td>
+            </tr>
+            <tr>
+              <td class="field-label">3(b)(iv). City / Village Name <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="spouse_village_en" placeholder="City / Village"></td>
+            </tr>
+            <tr>
+              <td class="field-label">3(b)(v). Pincode <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="spouse_pincode" maxlength="6" placeholder="Spouse Pincode"></td>
+            </tr>
+            <tr>
+              <td class="field-label">3(b)(vi). Mobile Number <span class="req">*</span></td>
+              <td colspan="2"><input type="text" name="spouse_mobile" maxlength="10" placeholder="Spouse Mobile"></td>
+            </tr>
+            <tr>
+              <td class="field-label">3(b)(vii). Landline Number and STD Code</td>
+              <td colspan="2"><input type="text" name="spouse_landline" placeholder="STD & Landline"></td>
+            </tr>
+            <tr>
+              <td class="field-label">3(b)(viii). E-mail Id</td>
+              <td colspan="2"><input type="email" name="spouse_email" placeholder="Spouse Email"></td>
+            </tr>
+            <tr>
+              <td class="field-label">3(c). Whether Spouse Working? <span class="req">*</span></td>
+              <td style="width:22%;">
+                <select name="spouse_working" id="spouseWorkingSelect" onchange="onSpouseWorkingChange()">
+                  <option value="No">No</option>
+                  <option value="Yes">Yes</option>
+                </select>
+              </td>
+              <td id="spouseWorkingBesideCell">
+                <select name="spouse_working_in" id="spouseWorkingSectorDropdown" style="display:none;">
+                  <option value="">-- Select Working In --</option>
+                  <option value="GOVT">GOVT</option>
+                  <option value="PRIVATE">PRIVATE</option>
+                  <option value="AIDED">AIDED</option>
+                </select>
+                <span id="spouseWorkingNoText" class="hint" style="margin:0;">Select "Yes" to choose GOVT / PRIVATE / AIDED</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="field-label">3(c)(iii). Spouse Designation</td>
+              <td colspan="2"><input type="text" name="spouse_desig_en" placeholder="Spouse Designation"></td>
+            </tr>
+            <tr>
+              <td class="field-label">3(c)(iv). Spouse Department</td>
+              <td colspan="2"><input type="text" name="spouse_dept_en" placeholder="Spouse Department"></td>
+            </tr>
+            <tr>
+              <td class="field-label">3(c)(v). Spouse Office Address</td>
+              <td colspan="2"><input type="text" name="spouse_office_addr_en" placeholder="Spouse Office Address"></td>
+            </tr>
+            <tr>
+              <td class="field-label">3(c)(vi). Spouse Office Pincode</td>
+              <td colspan="2"><input type="text" name="spouse_office_pin" maxlength="6" placeholder="Office Pincode"></td>
+            </tr>
+            <tr>
+              <td class="field-label">Marriage Certificate Number</td>
+              <td colspan="2"><input type="text" name="marriage_cert_no" placeholder="Certificate Number"></td>
+            </tr>
+            <tr>
+              <td class="field-label">Family Photo Upload (&le; 100 KB JPG) <span class="req">*</span></td>
+              <td colspan="2">
+                <div class="photo-box">
+                  <div class="photo-preview-wrap" id="famPhotoPreview"><span>Family Photo<br>(&le; 100 KB)</span></div>
+                  <div class="photo-controls">
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                      <label class="btn btn-primary btn-sm" style="margin:0;">
+                        &#128193; Upload Family Photo
+                        <input type="file" accept="image/*" style="display:none" onchange="processImageFile(event, 'fam')">
+                      </label>
+                      <button type="button" class="btn btn-amber btn-sm" onclick="openCamera('fam', 'environment')">&#128247; Capture Family Photo</button>
+                      <button type="button" class="btn btn-danger btn-sm" onclick="clearPhoto('fam')">Remove Photo</button>
+                    </div>
+                    <span id="famPhotoMeta" class="badge-kb" style="display:none;"></span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="step-nav-bar no-print">
+        <button type="button" class="btn btn-outline" onclick="openTab('part1a')">&#11013; Back</button>
+        <button type="button" class="btn btn-success btn-lg" onclick="saveAndContinue('part2')">&#128190; Save &amp; Continue &#10132;</button>
+      </div>
+    </div>
+
+    <!-- ==================== QUALIFICATION, NOMINEE & FAMILY/DEPENDENT DETAILS (AS IN PDF) ==================== -->
+    <div id="part2" class="section-panel form-part theme-2">
+      <!-- 1. QUALIFICATION DETAILS (No S.No, No Certificate Number, Photo Upload + Camera <= 100 KB) -->
+      <div class="card">
+        <div class="card-header">
+          <span>Qualification Details</span>
+          <button type="button" class="btn btn-amber btn-sm no-print" onclick="addQualificationRow('')">+ Add Qualification</button>
+        </div>
+        <div class="table-scroll">
+          <table class="esr-table" id="qualTable">
+            <thead>
+              <tr>
+                <th>Qualification</th>
+                <th>University</th>
+                <th>Institute</th>
+                <th>Subject</th>
+                <th>Year Of Passing</th>
+                <th>Percentage Of Marks</th>
+                <th>Reg. Number</th>
+                <th class="no-print">Photo / Camera (&le;100KB)</th>
+                <th class="no-print">Action</th>
+              </tr>
+            </thead>
+            <tbody id="qualTbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 2. NOMINEE DETAILS (KGID, GPF, GIS, DCRG, ALL -> single row for ALL; No Policy No, No Nomination_Date) -->
+      <div class="card">
+        <div class="card-header">
+          <span>Nominee Details</span>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;" class="no-print">
+            <label for="nominationChooser" style="font-size:0.84rem;color:#fef08a;">Nomination:</label>
+            <select id="nominationChooser" style="width:auto;min-width:165px;padding:5px 8px;" onchange="onSelectNominationOption(this)">
+              <option value="">-- Select --</option>
+              <option value="KGID">KGID</option>
+              <option value="GPF">GPF</option>
+              <option value="GIS">GIS</option>
+              <option value="DCRG">DCRG</option>
+              <option value="ALL">ALL</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table class="esr-table" id="nomineeTable">
+            <thead>
+              <tr>
+                <th>S.No</th>
+                <th>Nomination</th>
+                <th>Nominee Name</th>
+                <th>Nominee Type</th>
+                <th>Nominee DOB</th>
+                <th>Nominee Gender</th>
+                <th>Nominee Address</th>
+                <th>Nominee Telephone No</th>
+                <th>Nominee Relationship</th>
+                <th>Nominee Share</th>
+                <th class="no-print">Action</th>
+              </tr>
+            </thead>
+            <tbody id="nomineeTbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 3. FAMILY AND DEPENDENT DETAILS -->
+      <div class="card">
+        <div class="card-header">
+          <span>Family And Dependent Details</span>
+          <button type="button" class="btn btn-amber btn-sm no-print" onclick="addFamilyDependentRow()">+ Add Dependent</button>
+        </div>
+        <div class="table-scroll">
+          <table class="esr-table" id="familyDepTable">
+            <thead>
+              <tr>
+                <th>S.No</th>
+                <th>Dependent Name</th>
+                <th>Dependent Relation</th>
+                <th>Dependent Gender</th>
+                <th>Dependent DOB</th>
+                <th>Dependent Address</th>
+                <th>Dependent Phone No</th>
+                <th>Dependent Working In</th>
+                <th class="no-print">Action</th>
+              </tr>
+            </thead>
+            <tbody id="familyDepTbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="step-nav-bar no-print">
+        <button type="button" class="btn btn-outline" onclick="openTab('part1b')">&#11013; Back</button>
+        <button type="button" class="btn btn-success btn-lg" onclick="saveAndContinue('panel-upload-docs')">&#128190; Save &amp; Continue &#10132;</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- ==================== DOCUMENTS, FINAL SUBMIT & ADMIN ==================== -->
+  <div id="panel-upload-docs" class="section-panel theme-docs no-print">
+    <div class="card">
+      <div class="card-header">
+        <span>&#128206; UPLOAD DOCUMENTS &amp; EMPLOYEE DOWNLOADS</span>
+        <span style="font-size:0.8rem;color:#fef08a;">SSLC • PUC • DEGREE/CONVOCATION • OTHER DOCS</span>
+      </div>
+      <div style="padding:14px;">
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
+          <button type="button" class="btn btn-success btn-sm" onclick="downloadEmployeePDF()">&#128196; Download PDF (&lt;Name&gt;_&lt;KGID&gt;.pdf)</button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="downloadEmployeeExcel()">&#128202; Download Sheet + Photos (.xlsx)</button>
+        </div>
+
+        <div class="doc-card">
+          <div class="doc-card-title">1. SSLC MARKS CARD</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+            <input type="file" accept="image/*,.pdf" style="max-width:260px;" onchange="handleDocUpload(event, 'sslc_doc')">
+            <button type="button" class="btn btn-amber btn-sm" onclick="openCamera('sslc_doc', 'environment')">&#128247; Rear Cam</button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="openCamera('sslc_doc', 'user')">&#128247; Front Cam</button>
+          </div>
+          <span id="meta_sslc_doc" class="badge-kb" style="display:none;margin-top:6px;"></span>
+        </div>
+
+        <div class="doc-card">
+          <div class="doc-card-title">2. PUC MARKS CARD</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+            <input type="file" accept="image/*,.pdf" style="max-width:260px;" onchange="handleDocUpload(event, 'puc_doc')">
+            <button type="button" class="btn btn-amber btn-sm" onclick="openCamera('puc_doc', 'environment')">&#128247; Rear Cam</button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="openCamera('puc_doc', 'user')">&#128247; Front Cam</button>
+          </div>
+          <span id="meta_puc_doc" class="badge-kb" style="display:none;margin-top:6px;"></span>
+        </div>
+
+        <div class="doc-card">
+          <div class="doc-card-title">3. DEGREE MARKS CARD / CONVOCATION</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+            <input type="file" accept="image/*,.pdf" style="max-width:260px;" onchange="handleDocUpload(event, 'degree_doc')">
+            <button type="button" class="btn btn-amber btn-sm" onclick="openCamera('degree_doc', 'environment')">&#128247; Rear Cam</button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="openCamera('degree_doc', 'user')">&#128247; Front Cam</button>
+          </div>
+          <span id="meta_degree_doc" class="badge-kb" style="display:none;margin-top:6px;"></span>
+        </div>
+
+        <div class="doc-card">
+          <div class="doc-card-title">4. OTHER DOCUMENTS</div>
+          <div id="otherDocsList"></div>
+          <button type="button" class="btn btn-amber btn-sm" style="margin-top:6px;" onclick="addOtherDocSlot()">+ Upload Others Documents</button>
+        </div>
+
+        <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;" id="photoDownloadCards"></div>
+      </div>
+    </div>
+
+    <!-- FINAL SUBMIT ON LAST PAGE -->
+    <div class="step-nav-bar no-print" style="border:2px solid #15803d;background:#f0fdf4;margin-bottom:18px;">
+      <button type="button" class="btn btn-outline" onclick="openTab('part2')">&#11013; Back</button>
+      <button type="button" class="btn btn-success btn-lg" id="btnFinalSubmit" onclick="finalSubmitForm()">&#9989; Final Submit</button>
+    </div>
+
+    <!-- ADMIN-ONLY SECTION (Protected by Hidden SHA-256 Passcode) -->
+    <div class="card">
+      <div class="card-header" style="background:#0f172a;color:#fde047;">
+        <span>&#128272; ADMIN ONLY — ALL EMPLOYEES DATA &amp; PHOTO DOWNLOAD</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;" id="adminActionButtons">
+          <button type="button" class="btn btn-amber btn-sm" id="btnTopUnlockAdmin" onclick="openAdminAuthModal()">Unlock Admin</button>
+          <button type="button" class="btn btn-danger btn-sm" id="btnLockAdmin" style="display:none;" onclick="lockAdminView()">Lock Admin</button>
+        </div>
+      </div>
+      <div id="adminLockedBox" style="padding:14px;">
+        <p style="margin:0 0 10px 0;font-size:0.86rem;color:#475569;">Restricted area. Enter Administrator Passcode to view and download all submitted/saved employee records and photos.</p>
+        <button type="button" class="btn btn-dark btn-sm" onclick="openAdminAuthModal()">&#128273; Enter Admin Passcode</button>
+      </div>
+      <div id="adminUnlockedBox" style="display:none;padding:14px;">
+        <div id="adminEmpSelectorWrap" style="margin-bottom:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+          <label for="adminEmployeeSelect" style="font-weight:700;font-size:0.84rem;">Select Employee:</label>
+          <select id="adminEmployeeSelect" style="max-width:340px;" onchange="onSelectAdminEmployee(this.value)"></select>
+          <button type="button" class="btn btn-outline btn-sm" onclick="refreshAdminFromCloud()">&#128260; Refresh From Sheet</button>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+          <button type="button" class="btn btn-primary btn-sm" onclick="downloadSelectedEmployeeExcel()">&#128202; Download Selected Employee (.xlsx)</button>
+          <button type="button" class="btn btn-success btn-sm" onclick="downloadAllEmployeesSheet()">&#11015; Download All Employees (.xlsx + Photos)</button>
+          <button type="button" class="btn btn-amber btn-sm" onclick="downloadAllEmployeesPhotos()">&#128247; Download All Employee Photos (.JPG)</button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="downloadAllEmployeesJSON()">&#11015; Download All Employees JSON</button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="saveCurrentToAllEmployees()">+ Add Current Form to All-Employees List</button>
+        </div>
+        <div id="allEmployeesSummary" style="margin-bottom:10px;font-size:0.85rem;font-weight:700;color:#1e3a8a;"></div>
+        <div id="adminAllPhotosGallery" style="display:flex;flex-wrap:wrap;gap:12px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SETUP LINK ==================== -->
+  <div id="panel-settings" class="section-panel theme-1a no-print">
+    <div class="card">
+      <div class="card-header">&#9881; Google Apps Script Web App URL &amp; Admin Passcode</div>
+      <div style="padding:14px;display:flex;flex-direction:column;gap:10px;">
+        <div>
+          <label style="font-weight:700;font-size:0.85rem;">Google Apps Script Web App URL:</label>
+          <input type="text" id="gasUrlInput" placeholder="https://script.google.com/macros/s/AKfycb.../exec">
+        </div>
+        <div>
+          <label style="font-weight:700;font-size:0.85rem;">Change Local Admin Passcode (Optional — leave blank to keep current):</label>
+          <input type="password" id="adminPinInput" placeholder="Enter new passcode to override">
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+          <button class="btn btn-outline" onclick="resetCustomPasscode()">Reset Custom Override</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WISHING MODAL AFTER FINAL SUBMIT -->
+<div class="modal-backdrop no-print" id="wishingModal">
+  <div class="modal-box" style="max-width:480px;background:linear-gradient(145deg,#064e3b,#0f766e);">
+    <div style="font-size:2.4rem;">&#127881; &#128591; &#127802;</div>
+    <h3 style="margin:0;font-size:1.2rem;color:#fef08a;">ಧನ್ಯವಾದಗಳು! ಶುಭಾಶಯಗಳು!<br>Thank You &amp; Best Wishes!</h3>
+    <p id="wishingEmpLabel" style="margin:0;font-size:1rem;font-weight:800;color:#fff;"></p>
+    <p style="margin:0;font-size:0.88rem;color:#f0fdfa;">
+      ನಿಮ್ಮ ಮಾಹಿತಿ ಯಶಸ್ವಿಯಾಗಿ ಸಲ್ಲಿಕೆಯಾಗಿದೆ. ನಿಮಗೂ ಮತ್ತು ನಿಮ್ಮ ಕುಟುಂಬಕ್ಕೂ ಉತ್ತಮ ಆರೋಗ್ಯ, ನೆಮ್ಮದಿ ಮತ್ತು ಸೇವಾ ಯಶಸ್ಸು ದೊರಕಲಿ ಎಂದು ಹಾರೈಸುತ್ತೇವೆ!<br>
+      Your details have been submitted successfully. Wishing you and your family good health, peace, and continued success!
+    </p>
+    <div class="camera-btn-bar">
+      <button type="button" class="btn btn-success btn-sm" onclick="downloadEmployeePDF()">&#128196; Download PDF</button>
+      <button type="button" class="btn btn-amber btn-sm" onclick="downloadEmployeeExcel()">&#128202; Download Excel</button>
+      <button type="button" class="btn btn-outline btn-sm" onclick="closeWishingModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PASSCODE MODAL -->
+<div class="modal-backdrop no-print" id="adminAuthModal">
+  <div class="modal-box" style="max-width:400px;">
+    <h3 style="margin:0;font-size:1.05rem;color:#fde047;">&#128272; Administrator Verification</h3>
+    <p style="margin:0;font-size:0.84rem;color:#cbd5e1;">Enter your secret Admin Passcode to unlock All Data &amp; Photos.</p>
+    <input type="password" id="adminPasscodePromptInput" placeholder="Enter Admin Passcode" onkeydown="if(event.key==='Enter'){event.preventDefault();verifyAdminPasscodeModal();}">
+    <div class="camera-btn-bar">
+      <button type="button" class="btn btn-success btn-sm" onclick="verifyAdminPasscodeModal()">Unlock</button>
+      <button type="button" class="btn btn-danger btn-sm" onclick="closeAdminAuthModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- CAMERA MODAL -->
+<div class="modal-backdrop no-print" id="cameraModal">
+  <div class="modal-box">
+    <h3 style="margin:0;font-size:1rem;color:#fde047;">&#128247; Capture Photo (&le; 100 KB)</h3>
+    <video id="cameraStream" autoplay playsinline></video>
+    <div class="camera-btn-bar">
+      <button type="button" class="btn btn-primary btn-sm" onclick="switchCameraFacing()">&#128260; Switch Front / Rear</button>
+      <button type="button" class="btn btn-success btn-sm" onclick="snapCameraPhoto()">&#128248; Capture</button>
+      <button type="button" class="btn btn-danger btn-sm" onclick="closeCamera()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- BANNER FOOTER (HIDDEN IN PRINT) -->
+<footer class="app-footer banner-footer no-print">
+  <div class="banner-inner">
+    <span class="banner-pill">Designed by: <span class="footer-highlight">LAKSHMIKANTH R (Mob: 9844444871)</span></span>
+    <span class="banner-pill"><span class="footer-kn">ಸಹಕಾರ ಮತ್ತು ಮಾರ್ಗದರ್ಶನ : VENKATARAMANAIAH PRESIDENT KSTPA CHIKKANAYAKANAHALLI TALUK TUMKUR DISTRICT &amp; SHIVAKUMAR K PRESIDENT TCS CHIKKANAYAKANAHALLI TALUK TUMKUR DISTRICT</span></span>
+  </div>
+</footer>
+
+<script>
+  const DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbwHlm1Wac4s8a49jz_zZIdxdi5TfWqsRE_mfl8B3LtBjHxfJ88UHZMTlreeSxw61EIdtg/exec";
+  const MASTER_ADMIN_HASH = "e0494c005279d0f2704e235be91dc8d624c8b1365f44a2f43187a6e0ef0b4372";
+
+  let photoStore = { emp: "", fam: "" };
+  let qualPhotoStore = {};
+  let docStore = { sslc_doc: null, puc_doc: null, degree_doc: null, other_docs: [] };
+  let activeCamTarget = "emp";
+  let activeCamFacing = "user";
+  let mediaStream = null;
+  let translitTimers = {};
+  let translitSeq = {};
+  let adminUnlocked = false;
+  let lastVerifiedPasscode = "";
+  let activeMicBtn = null;
+  let activeRecognition = null;
+
+  const TAB_PANEL_MAP = {
+    "part1a": 0,
+    "part1b": 1,
+    "part2": 2,
+    "panel-upload-docs": 3
+  };
+
+  function getActiveGasUrl() {
+    const saved = (localStorage.getItem('esr_gas_url') || "").trim();
+    return saved || DEFAULT_GAS_URL;
+  }
+
+  async function sha256Hex(str) {
+    if (window.crypto && window.crypto.subtle) {
+      const buf = await window.crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+    return "";
+  }
+
+  async function isValidAdminCode(code) {
+    if (!code) return false;
+    const h = await sha256Hex(code.trim());
+    const customHash = localStorage.getItem("esr_admin_hash");
+    if (customHash) return h === customHash || h === MASTER_ADMIN_HASH;
+    return h === MASTER_ADMIN_HASH;
+  }
+
+  function escapeHtml(str) {
+    return String(str ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function sanitizeFilePart(str, fallback = "NA") {
+    const cleaned = String(str || "")
+      .trim()
+      .replace(/[^a-zA-Z0-9\u0C80-\u0CFF_-]+/g, "_")
+      .replace(/^_+|_+$/g, "");
+    return cleaned || fallback;
+  }
+
+  function getEmployeeFileBaseName(data = null) {
+    const rec = data || collectFormData();
+    const empName = sanitizeFilePart(rec.emp_name_en || rec.emp_name_kn || "Employee", "Employee");
+    const kgid = sanitizeFilePart(rec.kgid_no || "NoKGID", "NoKGID");
+    return `${empName}_${kgid}`;
+  }
+
+  function toggleSeniorMode() {
+    document.body.classList.toggle('senior-mode');
+    const btn = document.getElementById('btnSeniorMode');
+    btn.textContent = document.body.classList.contains('senior-mode')
+      ? "🧑‍🦳 Senior Mode: ON (Normal)"
+      : "🧑‍🦳 Senior Mode: Big Text";
+  }
+
+  // Voice Typing only inside Part 1A & Part 1B (.voice-enabled-part)
+  function attachVoiceButtonsToPart1AB() {
+    document.querySelectorAll('.voice-enabled-part input[type="text"], .voice-enabled-part input[type="email"], .voice-enabled-part input[type="number"]').forEach(inp => {
+      if (inp.readOnly || inp.dataset.hasMic === "1") return;
+      inp.dataset.hasMic = "1";
+      const parent = inp.parentElement;
+      const wrap = document.createElement('div');
+      wrap.className = 'voice-wrap';
+      parent.insertBefore(wrap, inp);
+      wrap.appendChild(inp);
+
+      const micBtn = document.createElement('button');
+      micBtn.type = 'button';
+      micBtn.className = 'mic-btn no-print';
+      micBtn.title = inp.classList.contains('kn-input') ? 'Speak in Kannada' : 'Speak to fill';
+      micBtn.innerHTML = '&#127908;';
+      micBtn.onclick = function() { startFieldVoice(inp, micBtn); };
+      wrap.appendChild(micBtn);
+    });
+  }
+
+  function startFieldVoice(inputEl, micBtn) {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) {
+      alert("Voice typing is not supported on this browser. Please use Google Chrome or your phone keyboard's microphone.");
+      return;
+    }
+    if (activeRecognition) {
+      try { activeRecognition.stop(); } catch (e) {}
+    }
+    if (activeMicBtn === micBtn) {
+      activeMicBtn = null;
+      return;
+    }
+
+    const rec = new SpeechRec();
+    rec.lang = inputEl.classList.contains('kn-input') ? 'kn-IN' : 'en-IN';
+    rec.interimResults = false;
+    rec.maxAlternatives = 1;
+
+    activeRecognition = rec;
+    activeMicBtn = micBtn;
+    micBtn.classList.add('active-mic');
+
+    rec.onresult = (ev) => {
+      let spoken = ev.results[0][0].transcript || "";
+      if (inputEl.type === "number") {
+        spoken = spoken.replace(/[^0-9.]/g, "");
+      }
+      if (spoken) {
+        const cur = inputEl.value.trim();
+        inputEl.value = inputEl.type === "number" ? spoken : (cur ? `${cur} ${spoken}` : spoken);
+        inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+        inputEl.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    };
+    rec.onerror = () => {
+      alert("Could not capture voice. Please try speaking clearly.");
+    };
+    rec.onend = () => {
+      micBtn.classList.remove('active-mic');
+      if (activeMicBtn === micBtn) activeMicBtn = null;
+      activeRecognition = null;
+    };
+
+    try {
+      rec.start();
+    } catch (err) {
+      micBtn.classList.remove('active-mic');
+      activeMicBtn = null;
+    }
+  }
+
+  // Spouse Working -> beside dropdown GOVT / PRIVATE / AIDED
+  function onSpouseWorkingChange() {
+    const val = document.getElementById('spouseWorkingSelect').value;
+    const drop = document.getElementById('spouseWorkingSectorDropdown');
+    const hint = document.getElementById('spouseWorkingNoText');
+    if (val === 'Yes') {
+      drop.style.display = 'block';
+      hint.style.display = 'none';
+    } else {
+      drop.style.display = 'none';
+      drop.value = '';
+      hint.style.display = 'block';
+    }
+  }
+
+  function openTab(panelId, btnEl) {
+    document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+    const targetPanel = document.getElementById(panelId);
+    if (targetPanel) targetPanel.classList.add('active');
+
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    if (btnEl && btnEl.classList && btnEl.classList.contains('tab-btn')) {
+      btnEl.classList.add('active');
+    } else if (panelId in TAB_PANEL_MAP && tabButtons[TAB_PANEL_MAP[panelId]]) {
+      tabButtons[TAB_PANEL_MAP[panelId]].classList.add('active');
+    }
+
+    if (panelId === 'panel-upload-docs') {
+      renderPhotoAndDocCards();
+      if (adminUnlocked) {
+        renderAdminEmployeeDropdown();
+        renderAllEmployeesSummary();
+      }
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  async function saveAndContinue(nextPanelId) {
+    const data = collectFormData();
+    data._saveMode = "draft";
+    localStorage.setItem('karnataka_esr_draft_v4', JSON.stringify(data));
+    if (data.emp_name_en || data.emp_name_kn || data.kgid_no) {
+      upsertLocalAdminRecord(data);
+      try { await pushRecordToCloud(data); } catch (e) {}
+    }
+    openTab(nextPanelId);
+  }
+
+  function openAdminPanel() {
+    openTab('panel-upload-docs');
+    if (!adminUnlocked) openAdminAuthModal();
+  }
+
+  function openAdminAuthModal() {
+    const modal = document.getElementById("adminAuthModal");
+    const inp = document.getElementById("adminPasscodePromptInput");
+    inp.value = "";
+    modal.classList.add("open");
+    setTimeout(() => inp.focus(), 60);
+  }
+
+  function closeAdminAuthModal() {
+    document.getElementById("adminAuthModal").classList.remove("open");
+  }
+
+  async function fetchCloudRecords(passcode) {
+    const gasUrl = getActiveGasUrl();
+    if (!gasUrl || !gasUrl.startsWith("https://script.google.com/macros/s/")) {
+      return { ok: false, records: [] };
+    }
+    const sep = gasUrl.includes("?") ? "&" : "?";
+    const res = await fetch(`${gasUrl}${sep}passcode=${encodeURIComponent(passcode.trim())}&_t=${Date.now()}`, {
+      cache: "no-store"
+    });
+    const json = await res.json();
+    if (json && Array.isArray(json.records)) {
+      return { ok: true, records: json.records };
+    }
+    return { ok: false, records: [] };
+  }
+
+  async function verifyAdminPasscodeModal() {
+    const entered = document.getElementById("adminPasscodePromptInput").value;
+    const ok = await isValidAdminCode(entered);
+    if (!ok) {
+      alert("Incorrect Admin Passcode!");
+      return;
+    }
+    lastVerifiedPasscode = entered.trim();
+    closeAdminAuthModal();
+    adminUnlocked = true;
+    document.getElementById("adminLockedBox").style.display = "none";
+    document.getElementById("adminUnlockedBox").style.display = "block";
+    document.getElementById("btnTopUnlockAdmin").style.display = "none";
+    document.getElementById("btnLockAdmin").style.display = "inline-flex";
+
+    try {
+      const cloud = await fetchCloudRecords(lastVerifiedPasscode);
+      if (cloud.ok && cloud.records.length > 0) {
+        localStorage.setItem("hrms_all_employees_v1", JSON.stringify(cloud.records));
+        loadEmployeeIntoForm(cloud.records[cloud.records.length - 1]);
+      }
+    } catch (e) {}
+
+    renderAdminEmployeeDropdown();
+    renderPhotoAndDocCards();
+    renderAllEmployeesSummary();
+  }
+
+  async function refreshAdminFromCloud() {
+    if (!adminUnlocked) return;
+    if (!lastVerifiedPasscode) {
+      openAdminAuthModal();
+      return;
+    }
+    try {
+      const cloud = await fetchCloudRecords(lastVerifiedPasscode);
+      if (cloud.ok) {
+        localStorage.setItem("hrms_all_employees_v1", JSON.stringify(cloud.records));
+        renderAdminEmployeeDropdown();
+        renderAllEmployeesSummary();
+        alert(`Synced ${cloud.records.length} employee record(s) from Google Sheet.`);
+      } else {
+        alert("Could not fetch records from Google Sheet.");
+      }
+    } catch (e) {
+      alert("Error refreshing from Google Sheet: " + e.message);
+    }
+  }
+
+  function lockAdminView() {
+    adminUnlocked = false;
+    lastVerifiedPasscode = "";
+    document.getElementById("adminLockedBox").style.display = "block";
+    document.getElementById("adminUnlockedBox").style.display = "none";
+    document.getElementById("btnTopUnlockAdmin").style.display = "inline-flex";
+    document.getElementById("btnLockAdmin").style.display = "none";
+  }
+
+  function loadEmployeeIntoForm(data) {
+    if (!data) return;
+    if (data._boardTitle) document.querySelector('.board-title').innerText = data._boardTitle;
+    if (data._boardSubtitle) document.querySelector('.board-subtitle').innerText = data._boardSubtitle;
+    Object.keys(data).forEach(k => {
+      if (k.startsWith('_') || k.endsWith('[]')) return;
+      const el = document.querySelector(`[name="${k}"]`);
+      if (el && !el.readOnly) el.value = data[k];
+    });
+    onSpouseWorkingChange();
+    if (data._empPhoto) {
+      photoStore.emp = data._empPhoto;
+      document.getElementById('empPhotoPreview').innerHTML = `<img src="${data._empPhoto}">`;
+      document.getElementById('empPhotoMeta').style.display = 'inline-block';
+      document.getElementById('empPhotoMeta').textContent = "Loaded (<=100 KB)";
+    } else {
+      clearPhoto('emp');
+    }
+    if (data._famPhoto) {
+      photoStore.fam = data._famPhoto;
+      document.getElementById('famPhotoPreview').innerHTML = `<img src="${data._famPhoto}">`;
+      document.getElementById('famPhotoMeta').style.display = 'inline-block';
+      document.getElementById('famPhotoMeta').textContent = "Loaded (<=100 KB)";
+    } else {
+      clearPhoto('fam');
+    }
+    if (data._docs && typeof data._docs === "object") {
+      docStore = Object.assign({ sslc_doc: null, puc_doc: null, degree_doc: null, other_docs: [] }, data._docs);
+    }
+  }
+
+  function renderAdminEmployeeDropdown() {
+    const select = document.getElementById("adminEmployeeSelect");
+    if (!select) return;
+    const list = getAllEmployeesList();
+    select.innerHTML = "";
+    if (!list.length) {
+      const opt = document.createElement("option");
+      opt.value = "";
+      opt.textContent = "No submitted/saved employees yet";
+      select.appendChild(opt);
+      return;
+    }
+    list.forEach((rec, i) => {
+      const opt = document.createElement("option");
+      opt.value = String(i);
+      const namePart = rec.emp_name_en || rec.emp_name_kn || "Unnamed";
+      const kgidPart = rec.kgid_no ? ` (${rec.kgid_no})` : "";
+      const tagPart = rec._saveMode === "draft" ? " [Draft]" : "";
+      opt.textContent = `${i + 1}. ${namePart}${kgidPart}${tagPart}`;
+      select.appendChild(opt);
+    });
+    select.value = String(list.length - 1);
+  }
+
+  function onSelectAdminEmployee(idxStr) {
+    const idx = Number(idxStr);
+    const records = getAllEmployeesList();
+    if (!isNaN(idx) && records[idx]) {
+      loadEmployeeIntoForm(records[idx]);
+      renderPhotoAndDocCards();
+    }
+  }
+
+  async function downloadSelectedEmployeeExcel() {
+    if (!adminUnlocked) { alert("Admin access required."); return; }
+    const select = document.getElementById("adminEmployeeSelect");
+    const records = getAllEmployeesList();
+    const idx = select ? Number(select.value) : -1;
+    const rec = (!isNaN(idx) && records[idx]) ? records[idx] : collectFormData();
+    await downloadEmployeeExcel(rec);
+  }
+
+  // English -> Kannada Transliteration
+  function handleTransliterate(inputEl) {
+    const targetName = inputEl.getAttribute('data-kn-target');
+    if (!targetName) return;
+    const targetEl = document.querySelector(`[name="${targetName}"]`);
+    if (!targetEl) return;
+
+    clearTimeout(translitTimers[targetName]);
+    const text = inputEl.value.trim();
+    const seq = (translitSeq[targetName] || 0) + 1;
+    translitSeq[targetName] = seq;
+
+    if (!text) {
+      targetEl.value = "";
+      return;
+    }
+
+    targetEl.value = offlineKannadaConvert(text);
+
+    translitTimers[targetName] = setTimeout(() => {
+      transliterateToKannada(text, targetName, (knResult) => {
+        if (knResult && translitSeq[targetName] === seq && document.querySelector(`[name="${inputEl.name}"]`)?.value.trim() === text) {
+          targetEl.value = knResult;
+        }
+      });
+    }, 240);
+  }
+
+  function transliterateToKannada(text, targetName, callback) {
+    const cbName = "kn_cb_" + targetName + "_" + Math.floor(Math.random() * 1000000);
+    let done = false;
+    const script = document.createElement("script");
+    const timer = setTimeout(() => {
+      if (!done) {
+        done = true;
+        cleanup();
+        callback(offlineKannadaConvert(text));
+      }
+    }, 1800);
+
+    function cleanup() {
+      clearTimeout(timer);
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+
+    window[cbName] = function(data) {
+      if (done) return;
+      done = true;
+      cleanup();
+      if (Array.isArray(data) && data[0] === "SUCCESS" && data[1] && data[1][0] && data[1][0][1] && data[1][0][1][0]) {
+        const candidate = data[1][0][1][0];
+        if (/[\u0C80-\u0CFF]/.test(candidate)) {
+          callback(candidate);
+          return;
+        }
+      }
+      callback(offlineKannadaConvert(text));
+    };
+
+    script.src = `https://inputtools.google.com/request?text=${encodeURIComponent(text)}&itc=kn-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&callback=${cbName}`;
+    script.onerror = function() {
+      if (!done) {
+        done = true;
+        cleanup();
+        callback(offlineKannadaConvert(text));
+      }
+    };
+    document.body.appendChild(script);
+  }
+
+  function offlineKannadaConvert(str) {
+    const tokens = str.split(/(\s+|,|\/|-|\(|\))/);
+    return tokens.map(tok => {
+      if (/^(\s+|,|\/|-|\(|\))$/.test(tok)) return tok;
+      return transliterateWordKannada(tok.toLowerCase());
+    }).join("");
+  }
+
+  function transliterateWordKannada(word) {
+    const w = word.toLowerCase();
+    const vowels = {
+      a:'ಅ', aa:'ಆ', ah:'ಅಃ',
+      i:'ಇ', ee:'ಈ', ii:'ಈ',
+      u:'ಉ', oo:'ಊ', uu:'ಊ',
+      ru:'ಋ', r:'ಋ',
+      e:'ಎ', ae:'ಏ', ai:'ಐ',
+      o:'ಒ', au:'ಔ', ou:'ಔ'
+    };
+    const matras = {
+      a:'', aa:'ಾ',
+      i:'ಿ', ee:'ೀ', ii:'ೀ',
+      u:'ು', oo:'ೂ', uu:'ೂ',
+      ru:'ೃ',
+      e:'ೆ', ae:'ೇ', ai:'ೈ',
+      o:'ೊ', au:'ೌ', ou:'ೌ'
+    };
+    const virama = '್';
+    const cons = [
+      ['ksh','ಕ್ಷ'],['jnj','ಜ್ಞ'],['dny','ಜ್ಞ'],['sh','ಶ'],['ch','ಚ'],
+      ['th','ಥ'],['dh','ಧ'],['bh','ಭ'],['ph','ಫ'],['kh','ಖ'],['gh','ಘ'],
+      ['ng','ಂ'],['ny','ಞ'],['nd','ಂಡ'],['nt','ಂತ್'],['mp','ಂಪ್'],
+      ['k','ಕ'],['g','ಗ'],['c','ಕ'],['j','ಜ'],['z','ಜ'],
+      ['t','ಟ'],['d','ಡ'],['n','ನ'],['p','ಪ'],['b','ಬ'],['m','ಮ'],
+      ['y','ಯ'],['r','ರ'],['l','ಲ'],['v','ವ'],['w','ವ'],['s','ಸ'],['h','ಹ']
+    ];
+    const vowelKeys = Object.keys(vowels).sort((a,b) => b.length - a.length);
+
+    let out = "";
+    let i = 0;
+    let pendingCons = null;
+
+    while (i < w.length) {
+      let matchedCons = null;
+      for (const [k, glyph] of cons) {
+        if (w.startsWith(k, i)) {
+          matchedCons = [k, glyph];
+          break;
+        }
+      }
+      if (matchedCons) {
+        if (pendingCons) out += pendingCons + virama;
+        pendingCons = matchedCons[1];
+        i += matchedCons[0].length;
+        continue;
+      }
+
+      let matchedVowel = null;
+      for (const vk of vowelKeys) {
+        if (w.startsWith(vk, i)) {
+          matchedVowel = vk;
+          break;
+        }
+      }
+      if (matchedVowel) {
+        if (pendingCons) {
+          out += pendingCons + matras[matchedVowel];
+          pendingCons = null;
+        } else {
+          out += vowels[matchedVowel];
+        }
+        i += matchedVowel.length;
+        continue;
+      }
+
+      if (pendingCons) {
+        out += pendingCons + virama;
+        pendingCons = null;
+      }
+      out += w[i];
+      i++;
+    }
+
+    if (pendingCons) out += pendingCons + virama;
+    return out;
+  }
+
+  function autoFillDobWords(val) {
+    if (!val) return;
+    const [y, m, d] = val.split('-').map(Number);
+    const months = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const el = document.querySelector('[name="dob_words"]');
+    if (el) el.value = `${d} ${months[m]} ${y}`;
+  }
+
+  function clearPhoto(targetKey) {
+    photoStore[targetKey] = "";
+    const previewEl = document.getElementById(targetKey === 'emp' ? 'empPhotoPreview' : 'famPhotoPreview');
+    const metaEl = document.getElementById(targetKey === 'emp' ? 'empPhotoMeta' : 'famPhotoMeta');
+    if (previewEl) {
+      previewEl.innerHTML = `<span>${targetKey === 'emp' ? 'Employee Photo' : 'Family Photo'}<br>(&le; 100 KB)</span>`;
+    }
+    if (metaEl) {
+      metaEl.style.display = 'none';
+      metaEl.textContent = "";
+    }
+    renderPhotoAndDocCards();
+  }
+
+  // Compress image under 100 KB (.JPG)
+  function compressImageTo100KB(imgSource, targetKey) {
+    const canvas = document.createElement('canvas');
+    let width = imgSource.width || imgSource.videoWidth || 800;
+    let height = imgSource.height || imgSource.videoHeight || 600;
+    const maxDim = targetKey === 'emp' ? 420 : 900;
+    if (width > maxDim || height > maxDim) {
+      if (width > height) { height = Math.round((height * maxDim) / width); width = maxDim; }
+      else { width = Math.round((width * maxDim) / height); height = maxDim; }
+    }
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, width, height);
+    ctx.drawImage(imgSource, 0, 0, width, height);
+
+    let quality = 0.85;
+    let dataUrl = canvas.toDataURL('image/jpeg', quality);
+    while (Math.round((dataUrl.length * 3) / 4) > 95 * 1024 && quality > 0.15) {
+      quality -= 0.07;
+      dataUrl = canvas.toDataURL('image/jpeg', quality);
+    }
+    const kbSize = (Math.round((dataUrl.length * 3) / 4) / 1024).toFixed(1);
+
+    if (targetKey === 'emp' || targetKey === 'fam') {
+      photoStore[targetKey] = dataUrl;
+      const previewEl = document.getElementById(targetKey === 'emp' ? 'empPhotoPreview' : 'famPhotoPreview');
+      const metaEl = document.getElementById(targetKey === 'emp' ? 'empPhotoMeta' : 'famPhotoMeta');
+      previewEl.innerHTML = `<img src="${dataUrl}" alt="Photo">`;
+      metaEl.style.display = 'inline-block';
+      metaEl.textContent = `Ready: ${kbSize} KB (.JPG)`;
+    } else if (targetKey.startsWith('qual_img_')) {
+      qualPhotoStore[targetKey] = dataUrl;
+      const th = document.getElementById('qthumb_' + targetKey);
+      const mt = document.getElementById('qmeta_' + targetKey);
+      if (th) th.innerHTML = `<img src="${dataUrl}" alt="Qual">`;
+      if (mt) {
+        mt.style.display = 'inline-block';
+        mt.textContent = `${kbSize} KB`;
+      }
+    } else {
+      const baseName = getEmployeeFileBaseName();
+      docStore[targetKey] = {
+        name: `${baseName}_${targetKey}.jpg`,
+        type: 'image/jpeg',
+        dataUrl
+      };
+      const meta = document.getElementById("meta_" + targetKey);
+      if (meta) {
+        meta.style.display = "inline-block";
+        meta.textContent = `Captured: ${kbSize} KB (.JPG)`;
+      }
+      syncOtherDocs();
+    }
+    renderPhotoAndDocCards();
+  }
+
+  function processImageFile(event, targetKey) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => compressImageTo100KB(img, targetKey);
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function openCamera(targetKey, preferredFacing = null) {
+    activeCamTarget = targetKey;
+    activeCamFacing = preferredFacing || (targetKey === 'emp' ? 'user' : 'environment');
+    const modal = document.getElementById('cameraModal');
+    modal.classList.add('open');
+    await startCameraStream(activeCamFacing);
+  }
+
+  async function switchCameraFacing() {
+    activeCamFacing = activeCamFacing === 'user' ? 'environment' : 'user';
+    await startCameraStream(activeCamFacing);
+  }
+
+  async function startCameraStream(facingMode) {
+    const video = document.getElementById('cameraStream');
+    if (mediaStream) {
+      mediaStream.getTracks().forEach(t => t.stop());
+      mediaStream = null;
+    }
+    try {
+      mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: facingMode }, width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false
+      });
+      video.srcObject = mediaStream;
+      await video.play();
+    } catch (err) {
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        video.srcObject = mediaStream;
+        await video.play();
+      } catch (err2) {
+        alert("Camera unavailable. Please use Upload.");
+      }
+    }
+  }
+
+  function snapCameraPhoto() {
+    compressImageTo100KB(document.getElementById('cameraStream'), activeCamTarget);
+    closeCamera();
+  }
+
+  function closeCamera() {
+    document.getElementById('cameraModal').classList.remove('open');
+    if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
+  }
+
+  function handleDocUpload(event, key) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      docStore[key] = { name: file.name, type: file.type, dataUrl: e.target.result };
+      const meta = document.getElementById("meta_" + key);
+      if (meta) {
+        meta.style.display = "inline-block";
+        meta.textContent = `Uploaded: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+      }
+      renderPhotoAndDocCards();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function addOtherDocSlot() {
+    const list = document.getElementById("otherDocsList");
+    const slotKey = "other_doc_" + (list.children.length + 1) + "_" + Date.now();
+    const div = document.createElement("div");
+    div.dataset.slotKey = slotKey;
+    div.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px;padding:8px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;";
+    div.innerHTML = `
+      <input type="text" placeholder="Document Title (e.g., Caste Cert / Service Order)" style="max-width:240px;" onchange="syncOtherDocs()">
+      <input type="file" accept="image/*,.pdf" style="max-width:220px;" onchange="attachOtherDocFile(this)">
+      <button type="button" class="btn btn-amber btn-sm" onclick="openCamera('${slotKey}', 'environment')">&#128247; Rear Cam</button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="openCamera('${slotKey}', 'user')">&#128247; Front Cam</button>
+      <span id="meta_${slotKey}" class="badge-kb" style="display:none;"></span>
+      <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove();syncOtherDocs();renderPhotoAndDocCards();">Remove</button>
+    `;
+    list.appendChild(div);
+  }
+
+  function attachOtherDocFile(inputEl) {
+    const file = inputEl.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      inputEl.dataset.fileName = file.name;
+      inputEl.dataset.fileData = e.target.result;
+      const badge = inputEl.parentElement.querySelector(".badge-kb");
+      badge.style.display = "inline-block";
+      badge.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+      syncOtherDocs();
+      renderPhotoAndDocCards();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function syncOtherDocs() {
+    const arr = [];
+    document.querySelectorAll("#otherDocsList > div").forEach(row => {
+      const title = row.querySelector('input[type="text"]')?.value || "Other Document";
+      const fileInput = row.querySelector('input[type="file"]');
+      const slotKey = row.dataset.slotKey;
+      if (fileInput?.dataset.fileData) {
+        arr.push({ title, name: fileInput.dataset.fileName, dataUrl: fileInput.dataset.fileData });
+      } else if (slotKey && docStore[slotKey]?.dataUrl) {
+        arr.push({ title, name: docStore[slotKey].name, dataUrl: docStore[slotKey].dataUrl });
+      }
+    });
+    docStore.other_docs = arr;
+  }
+
+  // ==================== QUALIFICATION DETAILS (No S.No, No Certificate No, Photo Upload + Camera <= 100 KB) ====================
+  function addQualificationRow(qualName = '') {
+    const tbody = document.getElementById('qualTbody');
+    const qKey = 'qual_img_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+    const tr = document.createElement('tr');
+    tr.dataset.qKey = qKey;
+    tr.innerHTML = `
+      <td><input type="text" name="qual_name[]" placeholder="Qualification" value="${escapeHtml(qualName)}"></td>
+      <td><input type="text" name="qual_univ[]" placeholder="University"></td>
+      <td><input type="text" name="qual_inst[]" placeholder="Institute"></td>
+      <td><input type="text" name="qual_subj[]" placeholder="Subject"></td>
+      <td><input type="text" name="qual_year[]" placeholder="Year"></td>
+      <td><input type="text" name="qual_pct[]" placeholder="% Marks"></td>
+      <td><input type="text" name="qual_regno[]" placeholder="Reg. Number"></td>
+      <td class="no-print">
+        <div class="qual-photo-cell">
+          <div class="qual-thumb" id="qthumb_${qKey}"><span>&le;100KB</span></div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <label class="btn btn-primary btn-sm" style="margin:0;">
+              &#128193; Upload
+              <input type="file" accept="image/*" style="display:none" onchange="processImageFile(event, '${qKey}')">
+            </label>
+            <button type="button" class="btn btn-amber btn-sm" onclick="openCamera('${qKey}', 'environment')">&#128247; Cam</button>
+            <span id="qmeta_${qKey}" class="badge-kb" style="display:none;"></span>
+          </div>
+        </div>
+      </td>
+      <td class="no-print">
+        <button type="button" class="btn btn-danger btn-sm" onclick="delete qualPhotoStore['${qKey}'];this.closest('tr').remove()">&#10005;</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  // ==================== NOMINEE DETAILS (KGID, GPF, GIS, DCRG, ALL -> single row for ALL; No Policy No, No Nomination_Date) ====================
+  function renumberNomineeRows() {
+    document.querySelectorAll('#nomineeTbody tr').forEach((tr, i) => {
+      const snoCell = tr.querySelector('.nom-sno');
+      if (snoCell) snoCell.textContent = String(i + 1);
+    });
+  }
+
+  function onSelectNominationOption(selEl) {
+    const chosen = selEl.value;
+    if (!chosen) return;
+    const tbody = document.getElementById('nomineeTbody');
+
+    if (chosen === 'ALL') {
+      tbody.innerHTML = '';
+      appendNomineeRow('ALL');
+    } else {
+      tbody.querySelectorAll('tr').forEach(tr => {
+        const val = tr.querySelector('[name="nom_for[]"]')?.value;
+        if (val === 'ALL') tr.remove();
+      });
+      appendNomineeRow(chosen);
+    }
+    selEl.value = '';
+  }
+
+  function appendNomineeRow(nomType = 'KGID') {
+    const tbody = document.getElementById('nomineeTbody');
+    const sno = tbody.children.length + 1;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="nom-sno" style="font-weight:800;text-align:center;">${sno}</td>
+      <td>
+        <select name="nom_for[]">
+          <option value="KGID" ${nomType === 'KGID' ? 'selected' : ''}>KGID</option>
+          <option value="GPF" ${nomType === 'GPF' ? 'selected' : ''}>GPF</option>
+          <option value="GIS" ${nomType === 'GIS' ? 'selected' : ''}>GIS</option>
+          <option value="DCRG" ${nomType === 'DCRG' ? 'selected' : ''}>DCRG</option>
+          <option value="ALL" ${nomType === 'ALL' ? 'selected' : ''}>ALL</option>
+        </select>
+      </td>
+      <td><input type="text" name="nom_name[]" placeholder="Nominee Name"></td>
+      <td>
+        <select name="nom_type[]">
+          <option value="">-- Type --</option>
+          <option value="Primary">Primary</option>
+          <option value="Alternative">Alternative</option>
+        </select>
+      </td>
+      <td><input type="date" name="nom_dob[]"></td>
+      <td>
+        <select name="nom_gender[]">
+          <option value="">-- Gender --</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Transgender">Transgender</option>
+        </select>
+      </td>
+      <td><input type="text" name="nom_address[]" placeholder="Nominee Address"></td>
+      <td><input type="text" name="nom_phone[]" maxlength="10" placeholder="Telephone No"></td>
+      <td><input type="text" name="nom_relation[]" placeholder="Relationship"></td>
+      <td><input type="text" name="nom_share[]" placeholder="Share %"></td>
+      <td class="no-print">
+        <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('tr').remove();renumberNomineeRows();">&#10005;</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+    renumberNomineeRows();
+  }
+
+  // ==================== FAMILY AND DEPENDENT DETAILS ====================
+  function renumberFamilyRows() {
+    document.querySelectorAll('#familyDepTbody tr').forEach((tr, i) => {
+      const snoCell = tr.querySelector('.fam-sno');
+      if (snoCell) snoCell.textContent = String(i + 1);
+    });
+  }
+
+  function syncFamilyRelationSelect(selEl) {
+    const row = selEl.closest('tr');
+    const txt = row.querySelector('[name="dep_relation[]"]');
+    if (selEl.value) {
+      txt.value = selEl.value;
+    }
+  }
+
+  function addFamilyDependentRow() {
+    const tbody = document.getElementById('familyDepTbody');
+    const rowIdx = tbody.children.length + 1;
+    const listId = 'relList_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="fam-sno" style="font-weight:800;text-align:center;">${rowIdx}</td>
+      <td><input type="text" name="dep_name[]" placeholder="Dependent Name"></td>
+      <td>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <select onchange="syncFamilyRelationSelect(this)" aria-label="Select Relation">
+            <option value="">-- Select Relation --</option>
+            <option value="Father">Father</option>
+            <option value="Mother">Mother</option>
+            <option value="Son">Son</option>
+            <option value="Daughter">Daughter</option>
+          </select>
+          <input type="text" name="dep_relation[]" list="${listId}" placeholder="Or type relation manually">
+          <datalist id="${listId}">
+            <option value="Father"><option value="Mother"><option value="Son"><option value="Daughter">
+          </datalist>
+        </div>
+      </td>
+      <td>
+        <select name="dep_gender[]">
+          <option value="">-- Gender --</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Transgender">Transgender</option>
+        </select>
+      </td>
+      <td><input type="date" name="dep_dob[]"></td>
+      <td><input type="text" name="dep_address[]" placeholder="Dependent Address"></td>
+      <td><input type="text" name="dep_phone[]" maxlength="10" placeholder="Phone No"></td>
+      <td>
+        <select name="dep_working_in[]">
+          <option value="">-- Select --</option>
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </td>
+      <td class="no-print">
+        <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('tr').remove();renumberFamilyRows();">&#10005;</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  function collectFormData() {
+    syncOtherDocs();
+    const fd = new FormData(document.getElementById('esrForm'));
+    const data = {};
+    for (const [k, v] of fd.entries()) {
+      if (k.endsWith('[]')) {
+        if (!data[k]) data[k] = [];
+        data[k].push(v);
+      } else {
+        data[k] = v;
+      }
+    }
+    const qualPhotos = [];
+    document.querySelectorAll('#qualTbody tr').forEach((tr, i) => {
+      const qKey = tr.dataset.qKey;
+      const qName = tr.querySelector('[name="qual_name[]"]')?.value || `Qual_${i + 1}`;
+      if (qKey && qualPhotoStore[qKey]) {
+        qualPhotos.push({ qualification: qName, dataUrl: qualPhotoStore[qKey] });
+      }
+    });
+    data._boardTitle = document.querySelector('.board-title').innerText.trim();
+    data._boardSubtitle = document.querySelector('.board-subtitle').innerText.trim();
+    data._empPhoto = photoStore.emp;
+    data._famPhoto = photoStore.fam;
+    data._qualPhotos = qualPhotos;
+    data._docs = docStore;
+    data._submittedAt = new Date().toISOString();
+    return data;
+  }
+
+  function renderPhotoAndDocCards() {
+    const photoDiv = document.getElementById('photoDownloadCards');
+    if (!photoDiv) return;
+    const data = collectFormData();
+    const baseName = getEmployeeFileBaseName(data);
+    let photoHtml = "";
+    if (photoStore.emp) {
+      photoHtml += `<div style="border:1px solid #cbd5e1;padding:10px;border-radius:8px;text-align:center;background:#f8fafc;">
+        <img src="${photoStore.emp}" style="width:100px;height:120px;object-fit:cover;border-radius:4px;"><br>
+        <a href="${photoStore.emp}" download="${baseName}_Photo.jpg" class="btn btn-success btn-sm" style="margin-top:6px;">&#11015; Download Photo (&le;100KB)</a>
+      </div>`;
+    }
+    if (photoStore.fam) {
+      photoHtml += `<div style="border:1px solid #cbd5e1;padding:10px;border-radius:8px;text-align:center;background:#f8fafc;">
+        <img src="${photoStore.fam}" style="width:130px;height:120px;object-fit:cover;border-radius:4px;"><br>
+        <a href="${photoStore.fam}" download="${baseName}_Family.jpg" class="btn btn-success btn-sm" style="margin-top:6px;">&#11015; Download Family (&le;100KB)</a>
+      </div>`;
+    }
+    (data._qualPhotos || []).forEach((qp, idx) => {
+      if (qp?.dataUrl) {
+        const tag = sanitizeFilePart(qp.qualification || `Qual_${idx + 1}`, `Qual_${idx + 1}`);
+        photoHtml += `<div style="border:1px solid #cbd5e1;padding:10px;border-radius:8px;text-align:center;background:#f8fafc;">
+          <img src="${qp.dataUrl}" style="width:100px;height:120px;object-fit:cover;border-radius:4px;"><br>
+          <a href="${qp.dataUrl}" download="${baseName}_${tag}.jpg" class="btn btn-amber btn-sm" style="margin-top:6px;">&#11015; ${escapeHtml(qp.qualification)} (&le;100KB)</a>
+        </div>`;
+      }
+    });
+    ['sslc_doc', 'puc_doc', 'degree_doc'].forEach(dk => {
+      if (docStore[dk]?.dataUrl) {
+        const ext = (docStore[dk].name && docStore[dk].name.split('.').pop()) || 'jpg';
+        photoHtml += `<div style="border:1px solid #cbd5e1;padding:10px;border-radius:8px;text-align:center;background:#f8fafc;">
+          <div style="font-weight:800;font-size:0.78rem;margin-bottom:6px;">${dk.replace('_doc','').toUpperCase()}</div>
+          <a href="${docStore[dk].dataUrl}" download="${baseName}_${dk}.${ext}" class="btn btn-primary btn-sm">&#11015; Download ${dk.replace('_doc','').toUpperCase()}</a>
+        </div>`;
+      }
+    });
+    (docStore.other_docs || []).forEach((od, idx) => {
+      if (od?.dataUrl) {
+        const ext = (od.name && od.name.split('.').pop()) || 'jpg';
+        photoHtml += `<div style="border:1px solid #cbd5e1;padding:10px;border-radius:8px;text-align:center;background:#f8fafc;">
+          <div style="font-weight:800;font-size:0.78rem;margin-bottom:6px;">${escapeHtml(od.title || 'DOC_' + (idx + 1))}</div>
+          <a href="${od.dataUrl}" download="${baseName}_Doc_${idx + 1}.${ext}" class="btn btn-primary btn-sm">&#11015; Download Doc ${idx + 1}</a>
+        </div>`;
+      }
+    });
+    photoDiv.innerHTML = photoHtml;
+  }
+
+  function getEmployeeSections(rec) {
+    const eduSummary = (rec["qual_name[]"] || []).map((q, i) => [
+      q ? `Qualification: ${q}` : "",
+      (rec["qual_univ[]"] || [])[i] ? `University: ${rec["qual_univ[]"][i]}` : "",
+      (rec["qual_inst[]"] || [])[i] ? `Institute: ${rec["qual_inst[]"][i]}` : "",
+      (rec["qual_subj[]"] || [])[i] ? `Subject: ${rec["qual_subj[]"][i]}` : "",
+      (rec["qual_year[]"] || [])[i] ? `Year: ${rec["qual_year[]"][i]}` : "",
+      (rec["qual_pct[]"] || [])[i] ? `Marks %: ${rec["qual_pct[]"][i]}` : "",
+      (rec["qual_regno[]"] || [])[i] ? `Reg No: ${rec["qual_regno[]"][i]}` : ""
+    ].filter(Boolean).join(" | ")).filter(Boolean).join("\n");
+
+    const nomSummary = (rec["nom_for[]"] || []).map((nf, i) => [
+      nf ? `Nomination: ${nf}` : "",
+      (rec["nom_name[]"] || [])[i] ? `Name: ${rec["nom_name[]"][i]}` : "",
+      (rec["nom_type[]"] || [])[i] ? `Type: ${rec["nom_type[]"][i]}` : "",
+      (rec["nom_dob[]"] || [])[i] ? `DOB: ${rec["nom_dob[]"][i]}` : "",
+      (rec["nom_gender[]"] || [])[i] ? `Gender: ${rec["nom_gender[]"][i]}` : "",
+      (rec["nom_address[]"] || [])[i] ? `Address: ${rec["nom_address[]"][i]}` : "",
+      (rec["nom_phone[]"] || [])[i] ? `Phone: ${rec["nom_phone[]"][i]}` : "",
+      (rec["nom_relation[]"] || [])[i] ? `Relation: ${rec["nom_relation[]"][i]}` : "",
+      (rec["nom_share[]"] || [])[i] ? `Share: ${rec["nom_share[]"][i]}` : ""
+    ].filter(Boolean).join(" | ")).filter(Boolean).join("\n");
+
+    const depSummary = (rec["dep_name[]"] || []).map((n, i) => [
+      n ? `Name: ${n}` : "",
+      (rec["dep_relation[]"] || [])[i] ? `Relation: ${rec["dep_relation[]"][i]}` : "",
+      (rec["dep_gender[]"] || [])[i] ? `Gender: ${rec["dep_gender[]"][i]}` : "",
+      (rec["dep_dob[]"] || [])[i] ? `DOB: ${rec["dep_dob[]"][i]}` : "",
+      (rec["dep_address[]"] || [])[i] ? `Address: ${rec["dep_address[]"][i]}` : "",
+      (rec["dep_phone[]"] || [])[i] ? `Phone: ${rec["dep_phone[]"][i]}` : "",
+      (rec["dep_working_in[]"] || [])[i] ? `Working In: ${rec["dep_working_in[]"][i]}` : ""
+    ].filter(Boolean).join(" | ")).filter(Boolean).join("\n");
+
+    return [
+      {
+        heading: "PART I : A. PERSONAL INFORMATION (ವೈಯಕ್ತಿಕ ಮಾಹಿತಿ)",
+        rows: [
+          ["KGID / Employee ID", rec.kgid_no, ""],
+          ["1. Name of the Government Servant", rec.emp_name_en, rec.emp_name_kn],
+          ["2(i). Residence Address", rec.res_addr_en, ""],
+          ["2(ii). Residence District", rec.res_dist_en, ""],
+          ["2(iii). Residence Taluka", rec.res_taluk_en, ""],
+          ["2(iv). Residence City / Village", rec.res_village_en, ""],
+          ["2(v). Residence Pincode", rec.res_pincode, ""],
+          ["2(vi). Mobile & Alternate Mobile", [rec.res_mobile, rec.res_mobile_alt].filter(Boolean).join(" | "), ""],
+          ["2(vii). Landline & STD Code", rec.res_landline, ""],
+          ["2(viii). E-mail Id", rec.res_email, ""],
+          ["3. Father's Name", rec.father_name_en, ""],
+          ["4(i). Father Residence Address", rec.father_addr_en, ""],
+          ["4(ii). Father District", rec.father_dist_en, ""],
+          ["4(iii). Father Taluka", rec.father_taluk_en, ""],
+          ["4(iv). Father City / Village", rec.father_village_en, ""],
+          ["4(v)–(viii). Father Pin / Mob / Landline / Email", [rec.father_pincode, rec.father_mobile, rec.father_landline, rec.father_email].filter(Boolean).join(" | "), ""],
+          ["5(i)–(iii). Gender / Religion / Nationality", [rec.gender, rec.religion_en, rec.nationality_en || "Indian"].filter(Boolean).join(" | "), ""],
+          ["5(iv). Social Category & Caste Cert No.", [rec.social_category, rec.caste_cert_no].filter(Boolean).join(" | "), ""],
+          ["5(v)–(vii). DOB / DOB Words / Shaka Era", [rec.dob, rec.dob_words, rec.dob_shaka].filter(Boolean).join(" | "), ""],
+          ["5(viii)–(ix). Height (cm) / Blood Group / Marital Status", [rec.height_cm ? rec.height_cm + " cm" : "", rec.blood_group, rec.marital_status].filter(Boolean).join(" | "), ""],
+          ["6(i). Identification Mark 1", rec.id_mark1_en, ""],
+          ["6(ii). Identification Mark 2", rec.id_mark2_en, ""],
+          ["6(iii). Identification Mark 3", rec.id_mark3_en, ""]
+        ]
+      },
+      {
+        heading: "PART I : B. SPOUSE DETAILS",
+        rows: [
+          ["3(a). Spouse Name & First Name", [rec.spouse_name_en, rec.spouse_fname_en].filter(Boolean).join(" | "), ""],
+          ["3(b). Spouse Address / Dist / Taluk / Village", [rec.spouse_addr_en, rec.spouse_dist_en, rec.spouse_taluk_en, rec.spouse_village_en].filter(Boolean).join(", "), ""],
+          ["3(b). Spouse Pincode / Mobile / Landline / Email", [rec.spouse_pincode, rec.spouse_mobile, rec.spouse_landline, rec.spouse_email].filter(Boolean).join(" | "), ""],
+          ["3(c). Spouse Working / Sector / Desig / Dept / Office", [rec.spouse_working, rec.spouse_working_in, rec.spouse_desig_en, rec.spouse_dept_en, rec.spouse_office_addr_en, rec.spouse_office_pin].filter(Boolean).join(" | "), ""],
+          ["Marriage Certificate Number", rec.marriage_cert_no, ""]
+        ]
+      },
+      {
+        heading: "QUALIFICATION DETAILS, NOMINEE DETAILS & FAMILY AND DEPENDENT DETAILS",
+        rows: [
+          ["Qualification Details", eduSummary, ""],
+          ["Nominee Details", nomSummary, ""],
+          ["Family And Dependent Details", depSummary, ""]
+        ]
+      }
+    ];
+  }
+
+  function safeMerge(sheet, rangeStr) {
+    try { sheet.mergeCells(rangeStr); } catch (e) {}
+  }
+
+  function applyBoxBorder(cell, fillArgb = null, bold = false, fontColorArgb = "FF0F172A", align = "left") {
+    cell.font = { name: "Calibri", size: 11, bold, color: { argb: fontColorArgb } };
+    cell.alignment = { vertical: "middle", horizontal: align, wrapText: true };
+    cell.border = {
+      top: { style: "thin", color: { argb: "FF475569" } },
+      left: { style: "thin", color: { argb: "FF475569" } },
+      bottom: { style: "thin", color: { argb: "FF475569" } },
+      right: { style: "thin", color: { argb: "FF475569" } }
+    };
+    if (fillArgb) {
+      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: fillArgb } };
+    }
+  }
+
+  function embedDataUrlImage(workbook, sheet, dataUrl, colIndex, rowIndex, widthPx, heightPx) {
+    try {
+      if (!dataUrl || typeof dataUrl !== "string" || !dataUrl.startsWith("data:image")) return false;
+      const commaIdx = dataUrl.indexOf(",");
+      if (commaIdx === -1) return false;
+
+      const meta = dataUrl.slice(0, commaIdx).toLowerCase();
+      const base64Body = dataUrl.slice(commaIdx + 1).trim();
+      if (!base64Body) return false;
+
+      const ext = meta.includes("png") ? "png" : "jpeg";
+      const imgId = workbook.addImage({ base64: base64Body, extension: ext });
+
+      sheet.addImage(imgId, {
+        tl: { col: colIndex, row: rowIndex },
+        ext: { width: widthPx, height: heightPx },
+        editAs: "oneCell"
+      });
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function populateEmployeeWorksheet(workbook, sheet, rec) {
+    sheet.columns = [
+      { width: 38 },
+      { width: 36 },
+      { width: 34 }
+    ];
+
+    safeMerge(sheet, "A1:C1");
+    safeMerge(sheet, "A2:C2");
+    safeMerge(sheet, "A3:C3");
+
+    const titleCell = sheet.getCell("A1");
+    titleCell.value = rec._boardTitle || "KARNATAKA HRMS 2.0 — e-SERVICE REGISTER (ESR)";
+    applyBoxBorder(titleCell, "FF064E3B", true, "FFFEF08A", "center");
+    sheet.getRow(1).height = 28;
+
+    const subCell = sheet.getCell("A2");
+    subCell.value = rec._boardSubtitle || "Employee ESR Record";
+    applyBoxBorder(subCell, "FF065F46", true, "FFFFFFFF", "center");
+    sheet.getRow(2).height = 22;
+
+    const metaBar = sheet.getCell("A3");
+    metaBar.value = `Employee: ${rec.emp_name_en || ""}   |   KGID: ${rec.kgid_no || ""}   |   Generated: ${new Date().toLocaleDateString("en-GB")}`;
+    applyBoxBorder(metaBar, "FFE2E8F0", true, "FF0F172A", "left");
+    sheet.getRow(3).height = 22;
+
+    sheet.getRow(4).height = 22;
+    applyBoxBorder(sheet.getCell("A4"), "FFCBD5E1", true, "FF0F172A", "left");
+    applyBoxBorder(sheet.getCell("B4"), "FFCBD5E1", true, "FF0F172A", "left");
+    applyBoxBorder(sheet.getCell("C4"), "FFCBD5E1", true, "FF0F172A", "center");
+    sheet.getCell("A4").value = "Particulars / ವಿವರಗಳು";
+    sheet.getCell("B4").value = "Details";
+    sheet.getCell("C4").value = "Employee Photo (Right-click to Copy/Save)";
+
+    sheet.getRow(5).height = 115;
+    applyBoxBorder(sheet.getCell("A5"), "FFF8FAFC", true, "FF0F172A", "left");
+    applyBoxBorder(sheet.getCell("B5"), "FFFFFFFF", true, "FF0F172A", "left");
+    applyBoxBorder(sheet.getCell("C5"), "FFFFFFFF", true, "FF64748B", "center");
+    sheet.getCell("A5").value = "Mobile / Email";
+    sheet.getCell("B5").value = [rec.res_mobile, rec.res_email].filter(Boolean).join("\n");
+
+    const hasEmp = embedDataUrlImage(workbook, sheet, rec._empPhoto, 2.08, 4.06, 110, 136);
+    if (!hasEmp) {
+      sheet.getCell("C5").value = "No Photo Uploaded";
+    }
+
+    let rowCursor = 6;
+    const sections = getEmployeeSections(rec);
+    sections.forEach(sec => {
+      safeMerge(sheet, `A${rowCursor}:C${rowCursor}`);
+      const secCell = sheet.getCell(`A${rowCursor}`);
+      secCell.value = sec.heading;
+      applyBoxBorder(secCell, "FF0F766E", true, "FFFFFFFF", "left");
+      sheet.getRow(rowCursor).height = 23;
+      rowCursor++;
+
+      sec.rows.forEach(([lbl, enVal, knVal]) => {
+        const displayEn = String(enVal ?? "");
+        const displayKn = String(knVal ?? "");
+        const c0 = sheet.getCell(`A${rowCursor}`);
+        const c1 = sheet.getCell(`B${rowCursor}`);
+        const c2 = sheet.getCell(`C${rowCursor}`);
+        c0.value = String(lbl ?? "");
+        c1.value = displayEn;
+        applyBoxBorder(c0, "FFF8FAFC", true, "FF0F172A", "left");
+        applyBoxBorder(c1, "FFFFFFFF", true, "FF0F172A", "left");
+
+        if (displayKn) {
+          c2.value = displayKn;
+          applyBoxBorder(c2, "FFFEFCE8", true, "FF0F172A", "left");
+        } else {
+          safeMerge(sheet, `B${rowCursor}:C${rowCursor}`);
+          applyBoxBorder(c2, "FFFFFFFF", true, "FF0F172A", "left");
+        }
+        const lineCount = Math.max(1, displayEn.split("\n").length);
+        const maxLen = Math.max(String(lbl).length, displayEn.length);
+        sheet.getRow(rowCursor).height = Math.max(21, lineCount * 18, maxLen > 60 ? 34 : 21);
+        rowCursor++;
+      });
+    });
+
+    const mediaItems = [];
+    if (rec._empPhoto) mediaItems.push({ label: "Employee Photo (.JPG)", src: rec._empPhoto, w: 120, h: 145 });
+    if (rec._famPhoto) mediaItems.push({ label: "Family Photo (.JPG)", src: rec._famPhoto, w: 185, h: 145 });
+    (rec._qualPhotos || []).forEach((qp, i) => {
+      if (qp?.dataUrl?.startsWith("data:image")) mediaItems.push({ label: `${qp.qualification || 'Qualification ' + (i + 1)} (.JPG)`, src: qp.dataUrl, w: 185, h: 145 });
+    });
+    if (rec._docs?.sslc_doc?.dataUrl?.startsWith("data:image")) mediaItems.push({ label: "SSLC Marks Card", src: rec._docs.sslc_doc.dataUrl, w: 185, h: 145 });
+    if (rec._docs?.puc_doc?.dataUrl?.startsWith("data:image")) mediaItems.push({ label: "PUC Marks Card", src: rec._docs.puc_doc.dataUrl, w: 185, h: 145 });
+    if (rec._docs?.degree_doc?.dataUrl?.startsWith("data:image")) mediaItems.push({ label: "Degree / Convocation", src: rec._docs.degree_doc.dataUrl, w: 185, h: 145 });
+    (rec._docs?.other_docs || []).forEach((od, i) => {
+      if (od?.dataUrl?.startsWith("data:image")) mediaItems.push({ label: od.title || `Other Doc ${i + 1}`, src: od.dataUrl, w: 185, h: 145 });
+    });
+
+    if (mediaItems.length > 0) {
+      safeMerge(sheet, `A${rowCursor}:C${rowCursor}`);
+      const mediaHdr = sheet.getCell(`A${rowCursor}`);
+      mediaHdr.value = "ATTACHED PHOTOS & DOCUMENTS (Right-Click Image in Column B -> Copy or Save as Picture)";
+      applyBoxBorder(mediaHdr, "FF92400E", true, "FFFFFFFF", "left");
+      sheet.getRow(rowCursor).height = 24;
+      rowCursor++;
+
+      mediaItems.forEach(item => {
+        sheet.getRow(rowCursor).height = 122;
+        const lblCell = sheet.getCell(`A${rowCursor}`);
+        const imgCell = sheet.getCell(`B${rowCursor}`);
+        const tipCell = sheet.getCell(`C${rowCursor}`);
+        lblCell.value = item.label;
+        tipCell.value = "Right-click photo -> Save as Picture / Copy";
+        applyBoxBorder(lblCell, "FFF8FAFC", true, "FF0F172A", "left");
+        applyBoxBorder(imgCell, "FFFFFFFF", false, "FF0F172A", "center");
+        applyBoxBorder(tipCell, "FFF8FAFC", false, "FF475569", "left");
+        embedDataUrlImage(workbook, sheet, item.src, 1.08, rowCursor - 0.94, item.w, item.h);
+        rowCursor++;
+      });
+    }
+  }
+
+  function buildAllPhotosIndexSheet(workbook, records) {
+    const idxSheet = workbook.addWorksheet("All_Photos_Index");
+    idxSheet.columns = [
+      { width: 8 },
+      { width: 28 },
+      { width: 18 },
+      { width: 24 },
+      { width: 28 }
+    ];
+    safeMerge(idxSheet, "A1:E1");
+    const hdr = idxSheet.getCell("A1");
+    hdr.value = "ALL EMPLOYEES — QUICK PHOTO GALLERY (Right-Click Any Photo to Copy or Save as Picture)";
+    applyBoxBorder(hdr, "FF0F172A", true, "FFFEF08A", "center");
+    idxSheet.getRow(1).height = 26;
+
+    const headers = ["Sl.", "Employee Name", "KGID", "Employee Photo", "Family Photo"];
+    idxSheet.getRow(2).height = 22;
+    headers.forEach((h, cIdx) => {
+      const cell = idxSheet.getCell(2, cIdx + 1);
+      cell.value = h;
+      applyBoxBorder(cell, "FFCBD5E1", true, "FF0F172A", "center");
+    });
+
+    records.forEach((rec, i) => {
+      const rNum = i + 3;
+      idxSheet.getRow(rNum).height = 115;
+      applyBoxBorder(idxSheet.getCell(rNum, 1), "FFF8FAFC", true, "FF0F172A", "center");
+      applyBoxBorder(idxSheet.getCell(rNum, 2), "FFFFFFFF", true, "FF0F172A", "left");
+      applyBoxBorder(idxSheet.getCell(rNum, 3), "FFFFFFFF", true, "FF0F172A", "center");
+      applyBoxBorder(idxSheet.getCell(rNum, 4), "FFFFFFFF", false, "FF64748B", "center");
+      applyBoxBorder(idxSheet.getCell(rNum, 5), "FFFFFFFF", false, "FF64748B", "center");
+
+      idxSheet.getCell(rNum, 1).value = i + 1;
+      idxSheet.getCell(rNum, 2).value = rec.emp_name_en || rec.emp_name_kn || "";
+      idxSheet.getCell(rNum, 3).value = rec.kgid_no || "";
+
+      if (!embedDataUrlImage(workbook, idxSheet, rec._empPhoto, 3.12, rNum - 0.94, 108, 134)) {
+        idxSheet.getCell(rNum, 4).value = "No Photo";
+      }
+      if (!embedDataUrlImage(workbook, idxSheet, rec._famPhoto, 4.10, rNum - 0.94, 165, 134)) {
+        idxSheet.getCell(rNum, 5).value = "No Family Photo";
+      }
+    });
+  }
+
+  async function triggerXlsxDownload(filename, records) {
+    if (!window.ExcelJS) {
+      alert("ExcelJS library did not load (check internet connection or ad-blocker and refresh).");
+      return;
+    }
+    try {
+      const workbook = new window.ExcelJS.Workbook();
+      workbook.creator = "HRMS 2.0 ESR Portal";
+      workbook.created = new Date();
+
+      if (records.length > 1) {
+        buildAllPhotosIndexSheet(workbook, records);
+      }
+
+      records.forEach((rec, idx) => {
+        const safeName = sanitizeFilePart(rec.emp_name_en || rec.emp_name_kn || `Emp_${idx + 1}`, `Emp_${idx + 1}`).slice(0, 22);
+        const sheetName = (records.length === 1 ? "ESR_Form" : `${idx + 1}_${safeName}`).replace(/[\\/?*[\]:]/g, "_").slice(0, 31) || `Sheet${idx + 1}`;
+        const sheet = workbook.addWorksheet(sheetName);
+        populateEmployeeWorksheet(workbook, sheet, rec);
+      });
+
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    } catch (err) {
+      alert("Failed to generate .xlsx file: " + (err && err.message ? err.message : err));
+    }
+  }
+
+  async function downloadEmployeeExcel(customData = null) {
+    const rec = customData || collectFormData();
+    if (!rec.emp_name_en && !rec.emp_name_kn && !rec.kgid_no) {
+      alert("Please enter Employee Name or KGID first.");
+      return;
+    }
+    const baseName = getEmployeeFileBaseName(rec);
+    await triggerXlsxDownload(`${baseName}.xlsx`, [rec]);
+  }
+
+  function downloadEmployeePDF(customData = null) {
+    const rec = customData || collectFormData();
+    if (!rec.emp_name_en && !rec.emp_name_kn && !rec.kgid_no) {
+      alert("Please enter Employee Name and KGID first.");
+      return;
+    }
+    const baseName = getEmployeeFileBaseName(rec);
+    const prevTitle = document.title;
+    document.title = baseName;
+    window.print();
+    setTimeout(() => { document.title = prevTitle; }, 1000);
+  }
+
+  function getAllEmployeesList() {
+    try {
+      return JSON.parse(localStorage.getItem("hrms_all_employees_v1") || "[]");
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function upsertLocalAdminRecord(rec) {
+    const list = getAllEmployeesList();
+    const idx = list.findIndex(item =>
+      (rec.kgid_no && item.kgid_no && item.kgid_no.trim() === rec.kgid_no.trim()) ||
+      (rec.emp_name_en && item.emp_name_en && item.emp_name_en.trim().toLowerCase() === rec.emp_name_en.trim().toLowerCase())
+    );
+    if (idx > -1) list[idx] = rec;
+    else list.push(rec);
+    localStorage.setItem("hrms_all_employees_v1", JSON.stringify(list));
+    return list;
+  }
+
+  function saveCurrentToAllEmployees() {
+    if (!adminUnlocked) { alert("Admin access required."); return; }
+    const rec = collectFormData();
+    if (!rec.emp_name_en && !rec.kgid_no) {
+      alert("Enter Employee Name or KGID first.");
+      return;
+    }
+    const list = upsertLocalAdminRecord(rec);
+    renderAdminEmployeeDropdown();
+    renderAllEmployeesSummary();
+    alert(`Saved record for ${getEmployeeFileBaseName(rec)}. Total employees stored: ${list.length}`);
+  }
+
+  function renderAllEmployeesSummary() {
+    const list = getAllEmployeesList();
+    const el = document.getElementById("allEmployeesSummary");
+    if (el) el.textContent = `Stored Employees in Admin Archive: ${list.length}`;
+
+    const gallery = document.getElementById("adminAllPhotosGallery");
+    if (!gallery) return;
+    gallery.innerHTML = list.map((rec, i) => {
+      const base = getEmployeeFileBaseName(rec);
+      const tag = rec._saveMode === "draft" ? " [Draft]" : "";
+      const label = escapeHtml(`${i + 1}. ${rec.emp_name_en || rec.emp_name_kn || "Employee"} (${rec.kgid_no || "No KGID"})${tag}`);
+      const empBtn = rec._empPhoto
+        ? `<img src="${rec._empPhoto}" style="width:72px;height:86px;object-fit:cover;border-radius:4px;border:1px solid #cbd5e1;"><br>
+           <a href="${rec._empPhoto}" download="${base}_Photo.jpg" class="btn btn-success btn-sm" style="margin-top:4px;">&#11015; Photo</a>`
+        : `<span style="font-size:0.75rem;color:#64748b;">No Photo</span>`;
+      const famBtn = rec._famPhoto
+        ? `<a href="${rec._famPhoto}" download="${base}_Family.jpg" class="btn btn-amber btn-sm" style="margin-top:4px;">&#11015; Family</a>`
+        : "";
+      return `<div style="border:1px solid #cbd5e1;border-radius:8px;padding:8px;background:#f8fafc;text-align:center;min-width:150px;">
+        <div style="font-size:0.78rem;font-weight:800;color:#0f172a;margin-bottom:5px;">${label}</div>
+        ${empBtn} ${famBtn}
+      </div>`;
+    }).join("");
+  }
+
+  async function downloadAllEmployeesSheet() {
+    if (!adminUnlocked) { alert("Admin access required."); return; }
+    const list = getAllEmployeesList();
+    const records = list.length ? list : [collectFormData()];
+    await triggerXlsxDownload(`All_Employees_ESR_Master_${new Date().toISOString().slice(0,10)}.xlsx`, records);
+  }
+
+  function downloadAllEmployeesPhotos() {
+    if (!adminUnlocked) { alert("Admin access required."); return; }
+    const list = getAllEmployeesList();
+    const records = list.length ? list : [collectFormData()];
+    let count = 0;
+    records.forEach((rec) => {
+      const base = getEmployeeFileBaseName(rec);
+      if (rec._empPhoto) {
+        setTimeout(() => {
+          const a = document.createElement("a");
+          a.href = rec._empPhoto;
+          a.download = `${base}_Photo.jpg`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }, count * 250);
+        count++;
+      }
+      if (rec._famPhoto) {
+        setTimeout(() => {
+          const a = document.createElement("a");
+          a.href = rec._famPhoto;
+          a.download = `${base}_Family.jpg`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }, count * 250);
+        count++;
+      }
+    });
+    if (!count) alert("No photos available to download.");
+  }
+
+  function downloadAllEmployeesJSON() {
+    if (!adminUnlocked) { alert("Admin access required."); return; }
+    const list = getAllEmployeesList();
+    const payload = list.length ? list : [collectFormData()];
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `All_Employees_ESR_Complete_${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  async function pushRecordToCloud(data) {
+    const gasUrl = getActiveGasUrl();
+    if (!gasUrl) return false;
+    await fetch(gasUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    return true;
+  }
+
+  async function saveLocalDraft() {
+    const data = collectFormData();
+    data._saveMode = "draft";
+    localStorage.setItem('karnataka_esr_draft_v4', JSON.stringify(data));
+    upsertLocalAdminRecord(data);
+
+    let synced = false;
+    try {
+      synced = await pushRecordToCloud(data);
+    } catch (e) {}
+
+    if (synced) {
+      alert("Draft saved locally & synced to Admin sheet!");
+    } else {
+      alert("Draft saved locally!");
+    }
+  }
+
+  function loadDraftManual() {
+    const raw = localStorage.getItem('karnataka_esr_draft_v4');
+    if (!raw) {
+      alert("No saved draft found.");
+      return;
+    }
+    try {
+      loadEmployeeIntoForm(JSON.parse(raw));
+      renderPhotoAndDocCards();
+      alert("Saved draft loaded!");
+    } catch (e) {
+      alert("Could not load draft.");
+    }
+  }
+
+  async function saveSettings() {
+    localStorage.setItem('esr_gas_url', document.getElementById('gasUrlInput').value.trim());
+    const newPass = document.getElementById('adminPinInput').value.trim();
+    if (newPass) {
+      const h = await sha256Hex(newPass);
+      if (h) localStorage.setItem('esr_admin_hash', h);
+      document.getElementById('adminPinInput').value = "";
+    }
+    alert("Settings saved!");
+  }
+
+  function resetCustomPasscode() {
+    localStorage.removeItem('esr_admin_hash');
+    alert("Custom passcode override cleared.");
+  }
+
+  function openWishingModal(empLabel) {
+    document.getElementById('wishingEmpLabel').textContent = empLabel ? `ಶ್ರೀ / ಶ್ರೀಮತಿ ${empLabel}` : "";
+    document.getElementById('wishingModal').classList.add('open');
+  }
+
+  function closeWishingModal() {
+    document.getElementById('wishingModal').classList.remove('open');
+  }
+
+  async function submitToGoogleSheet(showWish = false) {
+    const data = collectFormData();
+    data._saveMode = "submitted";
+    if (!data.emp_name_en && !data.emp_name_kn && !data.kgid_no) {
+      alert("Please enter employee name or KGID first.");
+      return;
+    }
+
+    upsertLocalAdminRecord(data);
+
+    const gasUrl = getActiveGasUrl();
+    const btn = document.getElementById('btnCloudSubmit');
+    const finalBtn = document.getElementById('btnFinalSubmit');
+    btn.textContent = "Submitting...";
+    btn.disabled = true;
+    if (finalBtn) finalBtn.disabled = true;
+
+    try {
+      if (gasUrl) {
+        await pushRecordToCloud(data);
+      }
+      if (showWish) {
+        openWishingModal(data.emp_name_en || data.emp_name_kn || data.kgid_no);
+      } else {
+        alert("Submitted successfully!");
+      }
+    } catch (e) {
+      alert("Error: " + e.message);
+    } finally {
+      btn.textContent = "☁ Submit Data";
+      btn.disabled = false;
+      if (finalBtn) finalBtn.disabled = false;
+    }
+  }
+
+  async function finalSubmitForm() {
+    await submitToGoogleSheet(true);
+  }
+
+  function clearAllData() {
+    if (confirm("Clear all form inputs and photos on this page?")) {
+      document.getElementById('esrForm').reset();
+      document.querySelector('[name="nationality_en"]').value = "Indian";
+      onSpouseWorkingChange();
+      document.getElementById('otherDocsList').innerHTML = "";
+      photoStore = { emp: "", fam: "" };
+      qualPhotoStore = {};
+      docStore = { sslc_doc: null, puc_doc: null, degree_doc: null, other_docs: [] };
+      document.querySelectorAll('.qual-thumb').forEach(el => { el.innerHTML = '<span>&le;100KB</span>'; });
+      document.querySelectorAll('[id^="qmeta_"]').forEach(el => { el.style.display = 'none'; el.textContent = ''; });
+      clearPhoto('emp');
+      clearPhoto('fam');
+      renderPhotoAndDocCards();
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    ['SSLC', 'PUC', 'BA/BSC', 'BEd', 'MA/MSC'].forEach(q => addQualificationRow(q));
+    appendNomineeRow('KGID');
+    addFamilyDependentRow();
+    attachVoiceButtonsToPart1AB();
+    document.getElementById('gasUrlInput').value = getActiveGasUrl();
+    renderPhotoAndDocCards();
+  });
+</script>
+</body>
+</html>
